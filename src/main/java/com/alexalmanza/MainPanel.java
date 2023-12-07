@@ -28,7 +28,7 @@ public class MainPanel extends JPanel implements ActionListener {
             Component comp = Main.gamepadComponents[i];
             EventQueue eventQueue = Main.gamepad.getEventQueue();
             // stream data from controller
-            g.drawString(comp.getName() + " : " + comp.getPollData(), getWidth()/2, ((getHeight()/Main.gamepadComponents.length)*i) + 20);
+            g.drawString(comp.getIdentifier() + " : " + comp.getPollData(), getWidth()/2, ((getHeight()/Main.gamepadComponents.length)*i) + 20);
         }
     }
 
