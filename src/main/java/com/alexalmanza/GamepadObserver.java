@@ -6,18 +6,18 @@ import net.java.games.input.Controller;
 import net.java.games.input.Event;
 import net.java.games.input.EventQueue;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to listen for controller input events registered as GamepadEvent objects
+ * Class to listen for controller input events registered as GamepadListener objects
  */
-public class GamepadEventObserver {
+public class GamepadObserver {
 
     /**
      * The list of event listeners registered to this observer
      */
-    private Map<Identifier, GamepadEvent> gamepadEvents;
+    private Map<Identifier, GamepadListener> gamepadListeners;
 
     /**
      * Event object for underlying plugin to populate
@@ -35,23 +35,28 @@ public class GamepadEventObserver {
      * @param event JInput Event instance to get current controller events
      * @param controller JInput Controller object for the observer to use
      */
-    public GamepadEventObserver(Event event, Controller controller) {
+    public GamepadObserver(Event event, Controller controller) {
+        if(event == null || controller == null) {
+            throw new NullPointerException();
+        }
         this.event = event;
         this.controller = controller;
-        gamepadEvents = new HashMap<>();
+        gamepadListeners = new ConcurrentHashMap<>();
     }
 
     /**
      * Method to listen for controller updates and execute callback functions of event listeners. This method should be run continuously or whenever update notifications are desired
      */
-    public void observe() {
+    public void listen() {
         if(event != null && controller != null) {
+            synchronized (this) {
             EventQueue queue = controller.getEventQueue();
             if(queue.getNextEvent(event)) {
                 Component eventComponent = event.getComponent();
-                for(Map.Entry<Identifier, GamepadEvent> entry : gamepadEvents.entrySet()) {
+                for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
                     if(eventComponent.getIdentifier() == entry.getKey()) {
                         entry.getValue().onChange();
+                        }
                     }
                 }
             }
@@ -61,22 +66,34 @@ public class GamepadEventObserver {
     /**
      * Adds an event listener to the observer's list of event listeners
      *
-     * @param event GamepadEvent object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
+     * @param listener GamepadListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
      * @param identifier Controller component identifier to specify which component update notification needs to update which callback function
      */
-    public void addEvent(GamepadEvent event, Identifier identifier) {
-        gamepadEvents.put(identifier, event);
+    public void addListener(GamepadListener listener, Identifier identifier) {
+        gamepadListeners.put(identifier, listener);
     }
 
     /**
      * Removes an event listener to the observer's list of event listeners
      *
-     * @param event GamepadEvent object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
+     * @param listener GamepadListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
      * @param identifier Controller component identifier to specify which component update notification needs to update which callback function
      */
-    public void removeEvent(GamepadEvent event, Identifier identifier) {
-        gamepadEvents.remove(identifier, event);
+    public void removeListener(GamepadListener listener, Identifier identifier) {
+        gamepadListeners.remove(identifier, listener);
     }
 
+    /**
+     * Retrieves the current component occupying the current event. This is for use in the onChange() callback method for a GamepadListener object.
+     *
+     * @return The component occupying the current event
+     */
+    public Component getCurrentEventComponent() {
+        if(controller.getEventQueue().getNextEvent(event)) {
+            return event.getComponent();
+        } else {
+            throw new NullPointerException("There is no current event component.");
+        }
+    }
 
 }
