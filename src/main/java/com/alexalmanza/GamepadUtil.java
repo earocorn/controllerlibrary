@@ -129,4 +129,6 @@ public class GamepadUtil {
         return components;
     }
 
+    public float getLeftTriggerValue
+
 }
