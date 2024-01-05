@@ -5,6 +5,7 @@ import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 /**
  * Class to set up an instance of JInput controller environment and initialize the currently connected gamepad
@@ -129,6 +130,17 @@ public class GamepadUtil {
         return components;
     }
 
-    public float getLeftTriggerValue
+    public boolean hasComponent(Component.Identifier identifier) {
+
+    }
+
+    public float getLeftTriggerValue() {
+        if(gamepad == null || gamepadComponents == null) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        if(Arrays.stream(gamepadComponents).anyMatch((Predicate<? super Component>) gamepad.getComponent(Component.Identifier.Axis.Z))) {
+            
+        }
+    }
 
 }
