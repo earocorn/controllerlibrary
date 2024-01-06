@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: 
+Class-Path: jinput-2.0.9-natives-all.jar jinput-2.0.9.jar
+

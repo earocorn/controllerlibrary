@@ -130,17 +130,17 @@ public class GamepadUtil {
         return components;
     }
 
-    public boolean hasComponent(Component.Identifier identifier) {
-
-    }
-
-    public float getLeftTriggerValue() {
-        if(gamepad == null || gamepadComponents == null) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
-        }
-        if(Arrays.stream(gamepadComponents).anyMatch((Predicate<? super Component>) gamepad.getComponent(Component.Identifier.Axis.Z))) {
-            
-        }
-    }
+//    public boolean hasComponent(Component.Identifier identifier) {
+//
+//    }
+//
+//    public float getLeftTriggerValue() {
+//        if(gamepad == null || gamepadComponents == null) {
+//            throw new NullPointerException(ERR_NOT_CONNECTED);
+//        }
+//        if(Arrays.stream(gamepadComponents).anyMatch((Predicate<? super Component>) gamepad.getComponent(Component.Identifier.Axis.Z))) {
+//
+//        }
+//    }
 
 }

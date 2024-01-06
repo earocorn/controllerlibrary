@@ -83,17 +83,4 @@ public class GamepadObserver {
         gamepadListeners.remove(identifier, listener);
     }
 
-    /**
-     * Retrieves the current component occupying the current event. This is for use in the onChange() callback method for a GamepadListener object.
-     *
-     * @return The component occupying the current event
-     */
-    public Component getCurrentEventComponent() {
-        if(controller.getEventQueue().getNextEvent(event)) {
-            return event.getComponent();
-        } else {
-            throw new NullPointerException("There is no current event component.");
-        }
-    }
-
 }

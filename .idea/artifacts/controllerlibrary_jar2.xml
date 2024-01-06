@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact name="controllerlibrary:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/controllerlibrary_jar2</output-path>
+    <root id="root">
+      <element id="archive" name="controllerlibrary.jar">
+        <element id="module-output" name="controllerlibrary" />
+      </element>
+      <element id="library" level="project" name="Maven: net.java.jinput:jinput:natives-all:2.0.9" />
+      <element id="library" level="project" name="Maven: net.java.jinput:jinput:2.0.9" />
+    </root>
+  </artifact>
+</component>
