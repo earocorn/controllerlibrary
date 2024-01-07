@@ -4,6 +4,7 @@ import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
@@ -46,6 +47,15 @@ public class GamepadUtil {
 
         gamepadComponents = gamepad.getComponents();
 
+    }
+
+    /**
+     * Check if gamepad is connected.
+     *
+     * @return True if gamepad is connected, false if gamepad is connected or the gamepad's components are null
+     */
+    public boolean isConnected() {
+        return gamepad != null || gamepadComponents != null;
     }
 
     /**
@@ -94,7 +104,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Axis components
      */
     public Component[] getAxisComponents() {
-        if(gamepad == null || gamepadComponents == null) {
+        if(!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -108,7 +118,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Button components
      */
     public Component[] getButtonComponents() {
-        if(gamepad == null || gamepadComponents == null) {
+        if(!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -122,7 +132,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Key components
      */
     public Component[] getKeyComponents() {
-        if(gamepad == null || gamepadComponents == null) {
+        if(!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -130,17 +140,139 @@ public class GamepadUtil {
         return components;
     }
 
-//    public boolean hasComponent(Component.Identifier identifier) {
-//
-//    }
-//
-//    public float getLeftTriggerValue() {
-//        if(gamepad == null || gamepadComponents == null) {
-//            throw new NullPointerException(ERR_NOT_CONNECTED);
-//        }
-//        if(Arrays.stream(gamepadComponents).anyMatch((Predicate<? super Component>) gamepad.getComponent(Component.Identifier.Axis.Z))) {
-//
-//        }
-//    }
+    /**
+     * Check if a component is currently active such as whether a button is being pressed or if a joystick is being moved
+     *
+     * @param identifier Identifier of requested component
+     * @return True if component's value is not default
+     */
+    public boolean isComponentActive(Component.Identifier identifier) {
+        boolean isActive = true;
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        if (gamepad.getComponent(identifier).getPollData() == gamepad.getComponent(identifier).getDeadZone()) {
+            isActive = false;
+        }
+        return isActive;
+    }
+
+    /**
+     * Check if gamepad has a certain component
+     *
+     * @param identifier Identifier of component
+     * @return True if the gamepad's components includes the identified component
+     */
+    public boolean hasComponent(Component.Identifier identifier) {
+        boolean isInList = false;
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        for(Component component : gamepadComponents) {
+            if(component.getIdentifier() == identifier) {
+                isInList = true;
+            }
+        }
+        return isInList;
+    }
+
+    /**
+     * Retrieve list of components' names
+     *
+     * @return ArrayList of component names
+     */
+    public ArrayList<String> getComponentsNamesAsList() {
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        ArrayList<String> array = new ArrayList<>();
+        for(Component component : gamepadComponents) {
+            array.add(component.getName());
+        }
+        return array;
+    }
+
+    /**
+     * Retrieve list of components' identifier values as Strings
+     *
+     * @return ArrayList of identifier Strings
+     */
+    public ArrayList<String> getComponentsIdentifiersAsList() {
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        ArrayList<String> array = new ArrayList<>();
+        for(Component component : gamepadComponents) {
+            array.add(component.getIdentifier().getName());
+        }
+        return array;
+    }
+
+    /**
+     * Retrieve list of components' float values
+     *
+     * @return ArrayList of raw component data
+     */
+    public ArrayList<Float> getComponentsDataAsList() {
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        ArrayList<Float> array  = new ArrayList<>();
+        for(Component component : gamepadComponents) {
+            array.add(component.getPollData());
+        }
+        return array;
+    }
+
+    /**
+     * Check if a Button component is currently being pressed
+     *
+     * @param identifier Identify which button component
+     * @return True if button is currently pressed
+     */
+    public boolean isButtonPressed(Component.Identifier identifier) {
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        boolean pressed = false;
+        if(identifier instanceof Component.Identifier.Button) {
+            if(hasComponent(identifier)) {
+                pressed = gamepad.getComponent(identifier).getPollData() == 1.0f;
+            }
+        }
+        return pressed;
+    }
+
+    /**
+     * Get left or right trigger pressure identified by the Identifier.Axis.Z component
+     *
+     * @param isLeft If left trigger pressure is requested
+     * @return Value of left or right trigger pressure
+     */
+    public float getTriggerPressure(boolean isLeft) {
+        if(!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        float pressure = 0.0f;
+        if(hasComponent(Component.Identifier.Axis.Z)) {
+            Component component = gamepad.getComponent(Component.Identifier.Axis.Z);
+            float deadZone = component.getDeadZone();
+            float currentValue = component.getPollData();
+            if(currentValue != deadZone) {
+                if(isLeft) {
+                    if(currentValue > deadZone) {
+                        pressure = currentValue;
+                    }
+                } else {
+                    if(currentValue < deadZone) {
+                        pressure = currentValue;
+                    }
+                }
+            } else {
+                pressure = deadZone;
+            }
+        }
+        return pressure;
+    }
 
 }

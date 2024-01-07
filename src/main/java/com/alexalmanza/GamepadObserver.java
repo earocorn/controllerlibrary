@@ -55,7 +55,7 @@ public class GamepadObserver {
                 Component eventComponent = event.getComponent();
                 for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
                     if(eventComponent.getIdentifier() == entry.getKey()) {
-                        entry.getValue().onChange();
+                            entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
                         }
                     }
                 }
