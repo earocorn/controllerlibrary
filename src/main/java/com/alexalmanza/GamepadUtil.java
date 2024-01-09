@@ -275,4 +275,6 @@ public class GamepadUtil {
         return pressure;
     }
 
+    public float getSensitivity
+
 }
