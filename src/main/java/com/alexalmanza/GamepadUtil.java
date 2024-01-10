@@ -6,6 +6,8 @@ import net.java.games.input.ControllerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
@@ -23,6 +25,10 @@ public class GamepadUtil {
      */
     private Component[] gamepadComponents;
 
+    /**
+     * Map of joystick sensitivities
+     */
+    private Map<Component.Identifier, Sensitivity> sensitivityMap;
     private final String ERR_NOT_CONNECTED = "A gamepad is not connected.";
 
     /**
@@ -47,6 +53,7 @@ public class GamepadUtil {
 
         gamepadComponents = gamepad.getComponents();
 
+        sensitivityMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -275,6 +282,65 @@ public class GamepadUtil {
         return pressure;
     }
 
-    public float getSensitivity
+    /**
+     * Return value of component that's passed through sensitivity map
+     *
+     * @param identifier
+     * @return
+     */
+    public float getValueWithSensitivity(Component.Identifier identifier) {
+        float value = 0.0f;
+        if (sensitivityMap == null || sensitivityMap.isEmpty()) {
+            return value;
+        }
+        return value;
+    }
+
+    private float getSensitivityModifier(Sensitivity sensitivity) {
+        float modifier = 1.0f;
+        switch (sensitivity) {
+            case VERY_LOW:
+
+                break;
+            case LOW:
+
+                break;
+            case MEDIUM:
+
+                break;
+            case HIGH:
+                
+                break;
+            case VERY_HIGH:
+
+                break;
+        }
+        return modifier;
+    }
+
+    /**
+     * Set the sensitivity value for the identified component
+     *
+     * @param identifier Identifies component
+     * @param sensitivity Sensitivity value
+     */
+    public void setSensitivity(Component.Identifier identifier, Sensitivity sensitivity) {
+        if(sensitivityMap == null) {
+            throw new NullPointerException("Sensitivity hashmap is null");
+        }
+        sensitivityMap.put(identifier, sensitivity);
+    }
+
+    /**
+     * Get a component's custom sensitivity value
+     *
+     * @return Sensitivity of component given identifier
+     */
+    public Sensitivity getSensitivity(Component.Identifier identifier) {
+        if(sensitivityMap == null || sensitivityMap.isEmpty()) {
+            return Sensitivity.NULL;
+        }
+        return sensitivityMap.get(identifier);
+    }
 
 }
