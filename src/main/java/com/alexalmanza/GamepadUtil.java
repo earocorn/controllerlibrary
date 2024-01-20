@@ -341,7 +341,9 @@ public class GamepadUtil {
         return sensitivityMap.get(identifier);
     }
 
-    private GamepadDirection getJoystickDirection() {
+    private GamepadDirection getJoystickDirection(boolean isRightJoystick) {
+        GamepadDirection gamepadDirection = GamepadDirection.NULL;
+        return gamepadDirection;
     }
 
     public GamepadDirection getDirection(GamepadAxis axis) {
