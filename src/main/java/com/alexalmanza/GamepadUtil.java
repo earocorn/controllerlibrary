@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 /**
  * Class to set up an instance of JInput controller environment and initialize the currently connected gamepad
@@ -41,13 +40,13 @@ public class GamepadUtil {
         // For example, add argument -Djava.library.path="./jiraw" to launch.* with the jiraw directory containing all the native files
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 
-        for(Controller controller : controllers) {
-            if(controller.getType() == Controller.Type.GAMEPAD) {
+        for (Controller controller : controllers) {
+            if (controller.getType() == Controller.Type.GAMEPAD) {
                 gamepad = controller;
             }
         }
 
-        if(gamepad == null) {
+        if (gamepad == null) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
 
@@ -69,7 +68,7 @@ public class GamepadUtil {
      * Poll the gamepad for updates, to populate data of each gamepad component
      */
     public void pollGamepad() {
-        if(gamepad != null) {
+        if (gamepad != null) {
             gamepad.poll();
         }
     }
@@ -99,7 +98,7 @@ public class GamepadUtil {
      * @return Float value of the component's poll data
      */
     public float getComponentValue(Component.Identifier identifier) {
-        if(gamepad == null) {
+        if (gamepad == null) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         return gamepad.getComponent(identifier).getPollData();
@@ -111,7 +110,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Axis components
      */
     public Component[] getAxisComponents() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -125,7 +124,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Button components
      */
     public Component[] getButtonComponents() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -139,7 +138,7 @@ public class GamepadUtil {
      * @return Component array of the current gamepad's Key components
      */
     public Component[] getKeyComponents() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         Component[] components;
@@ -155,7 +154,7 @@ public class GamepadUtil {
      */
     public boolean isComponentActive(Component.Identifier identifier) {
         boolean isActive = true;
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         if (gamepad.getComponent(identifier).getPollData() == gamepad.getComponent(identifier).getDeadZone()) {
@@ -172,11 +171,11 @@ public class GamepadUtil {
      */
     public boolean hasComponent(Component.Identifier identifier) {
         boolean isInList = false;
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
-        for(Component component : gamepadComponents) {
-            if(component.getIdentifier() == identifier) {
+        for (Component component : gamepadComponents) {
+            if (component.getIdentifier() == identifier) {
                 isInList = true;
             }
         }
@@ -189,11 +188,11 @@ public class GamepadUtil {
      * @return ArrayList of component names
      */
     public ArrayList<String> getComponentsNamesAsList() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         ArrayList<String> array = new ArrayList<>();
-        for(Component component : gamepadComponents) {
+        for (Component component : gamepadComponents) {
             array.add(component.getName());
         }
         return array;
@@ -205,11 +204,11 @@ public class GamepadUtil {
      * @return ArrayList of identifier Strings
      */
     public ArrayList<String> getComponentsIdentifiersAsList() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         ArrayList<String> array = new ArrayList<>();
-        for(Component component : gamepadComponents) {
+        for (Component component : gamepadComponents) {
             array.add(component.getIdentifier().getName());
         }
         return array;
@@ -221,11 +220,11 @@ public class GamepadUtil {
      * @return ArrayList of raw component data
      */
     public ArrayList<Float> getComponentsDataAsList() {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
-        ArrayList<Float> array  = new ArrayList<>();
-        for(Component component : gamepadComponents) {
+        ArrayList<Float> array = new ArrayList<>();
+        for (Component component : gamepadComponents) {
             array.add(component.getPollData());
         }
         return array;
@@ -238,12 +237,12 @@ public class GamepadUtil {
      * @return True if button is currently pressed
      */
     public boolean isButtonPressed(Component.Identifier identifier) {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         boolean pressed = false;
-        if(identifier instanceof Component.Identifier.Button) {
-            if(hasComponent(identifier)) {
+        if (identifier instanceof Component.Identifier.Button) {
+            if (hasComponent(identifier)) {
                 pressed = gamepad.getComponent(identifier).getPollData() == 1.0f;
             }
         }
@@ -257,21 +256,21 @@ public class GamepadUtil {
      * @return Value of left or right trigger pressure
      */
     public float getTriggerPressure(boolean isLeft) {
-        if(!isConnected()) {
+        if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         float pressure = 0.0f;
-        if(hasComponent(Component.Identifier.Axis.Z)) {
+        if (hasComponent(Component.Identifier.Axis.Z)) {
             Component component = gamepad.getComponent(Component.Identifier.Axis.Z);
             float deadZone = component.getDeadZone();
             float currentValue = component.getPollData();
-            if(currentValue != deadZone) {
-                if(isLeft) {
-                    if(currentValue > deadZone) {
+            if (currentValue != deadZone) {
+                if (isLeft) {
+                    if (currentValue > deadZone) {
                         pressure = currentValue;
                     }
                 } else {
-                    if(currentValue < deadZone) {
+                    if (currentValue < deadZone) {
                         pressure = currentValue;
                     }
                 }
@@ -297,22 +296,21 @@ public class GamepadUtil {
     }
 
     private float getSensitivityModifier(Sensitivity sensitivity) {
-        float modifier = 1.0f;
+        float modifier = 0.6f;
         switch (sensitivity) {
             case VERY_LOW:
-
+                modifier = 0.2f;
                 break;
             case LOW:
-
+                modifier = 0.4f;
                 break;
             case MEDIUM:
-
                 break;
             case HIGH:
-                
+                modifier = 0.8f;
                 break;
             case VERY_HIGH:
-
+                modifier = 1.0f;
                 break;
         }
         return modifier;
@@ -321,11 +319,11 @@ public class GamepadUtil {
     /**
      * Set the sensitivity value for the identified component
      *
-     * @param identifier Identifies component
+     * @param identifier  Identifies component
      * @param sensitivity Sensitivity value
      */
     public void setSensitivity(Component.Identifier identifier, Sensitivity sensitivity) {
-        if(sensitivityMap == null) {
+        if (sensitivityMap == null) {
             throw new NullPointerException("Sensitivity hashmap is null");
         }
         sensitivityMap.put(identifier, sensitivity);
@@ -337,10 +335,41 @@ public class GamepadUtil {
      * @return Sensitivity of component given identifier
      */
     public Sensitivity getSensitivity(Component.Identifier identifier) {
-        if(sensitivityMap == null || sensitivityMap.isEmpty()) {
-            return Sensitivity.NULL;
+        if (sensitivityMap == null || sensitivityMap.isEmpty()) {
+            throw new NullPointerException("Sensitivity hashmap is null");
         }
         return sensitivityMap.get(identifier);
     }
 
-}
+    private GamepadDirection getJoystickDirection() {
+    }
+
+    public GamepadDirection getDirection(GamepadAxis axis) {
+        if (!isConnected()) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        GamepadDirection gamepadDirection = GamepadDirection.NULL;
+        switch (axis) {
+            case LEFT_JOYSTICK:
+                if (!hasComponent(Component.Identifier.Axis.X) || !hasComponent(Component.Identifier.Axis.Y)) {
+                    throw new NullPointerException("Left joystick not found");
+                }
+                float xVal = getComponentValue(Component.Identifier.Axis.X);
+                float yVal = getComponentValue(Component.Identifier.Axis.Y);
+                break;
+            case RIGHT_JOYSTICK:
+                if (!hasComponent(Component.Identifier.Axis.RX) || !hasComponent(Component.Identifier.Axis.RY)) {
+                    throw new NullPointerException("Right joystick not found");
+                }
+                float rxVal = getComponentValue(Component.Identifier.Axis.RX);
+                float ryVal = getComponentValue(Component.Identifier.Axis.RY);
+                break;
+            case D_PAD:
+                if (!hasComponent(Component.Identifier.Axis.POV)) {
+                    throw new NullPointerException("Right joystick not found");
+                }
+                float dpadVal = getComponentValue(Component.Identifier.Axis.POV);
+                break;
+        }
+        return gamepadDirection;
+    }
