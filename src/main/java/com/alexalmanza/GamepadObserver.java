@@ -22,26 +22,53 @@ public class GamepadObserver {
     /**
      * Event object for underlying plugin to populate
      */
-    private Event event;
+    private static Event event;
 
     /**
      * The controller to which the observer is applied
      */
-    private Controller controller;
+    private static Controller controller;
 
     /**
-     * Constructor
-     *
-     * @param event JInput Event instance to get current controller events
-     * @param controller JInput Controller object for the observer to use
+     * Instance of observer for singleton
      */
-    public GamepadObserver(Event event, Controller controller) {
+    private static GamepadObserver gamepadObserver;
+
+    //TODO convert to singleton and have its own thread to use listeners
+    /**
+     * Singleton constructor
+     */
+    private GamepadObserver() {
         if(event == null || controller == null) {
-            throw new NullPointerException();
+            event = new Event();
+            controller = GamepadUtil.getGamepad();
         }
-        this.event = event;
-        this.controller = controller;
         gamepadListeners = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Get instance of singleton class
+     *
+     * @return Current instance of GamepadObserver
+     */
+    public static GamepadObserver getInstance() {
+        if(gamepadObserver == null) {
+            gamepadObserver = new GamepadObserver();
+            //TODO ensure singleton works
+        }
+        return gamepadObserver;
+    }
+
+    /**
+     * Get current Event for use of JInput library
+     *
+     * @return current event instance
+     */
+    public Event getEvent() {
+        if(event == null) {
+            event = new Event();
+        }
+        return event;
     }
 
     /**

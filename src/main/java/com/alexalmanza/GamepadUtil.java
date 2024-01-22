@@ -17,7 +17,7 @@ public class GamepadUtil {
     /**
      * The main gamepad controller
      */
-    private Controller gamepad;
+    private static Controller gamepad;
 
     /**
      * List of gamepad components associated with the main gamepad controller
@@ -38,14 +38,8 @@ public class GamepadUtil {
         // https://jinput.github.io/jinput/
         // Default environment loaded from native library. Currently, to use native libraries, set java.library.path to the path of all native libraries
         // For example, add argument -Djava.library.path="./jiraw" to launch.* with the jiraw directory containing all the native files
-        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-
-        for (Controller controller : controllers) {
-            if (controller.getType() == Controller.Type.GAMEPAD) {
-                gamepad = controller;
-            }
-        }
-
+        gamepad = getGamepad();
+        //TODO make sure getting gamepad work
         if (gamepad == null) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
@@ -87,7 +81,14 @@ public class GamepadUtil {
      *
      * @return gamepad
      */
-    public Controller getGamepad() {
+    public static Controller getGamepad() {
+        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+
+        for (Controller controller : controllers) {
+            if (controller.getType() == Controller.Type.GAMEPAD) {
+                gamepad = controller;
+            }
+        }
         return gamepad;
     }
 
@@ -111,7 +112,7 @@ public class GamepadUtil {
      */
     public Component[] getAxisComponents() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         Component[] components;
         components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Axis).toArray();
@@ -125,7 +126,7 @@ public class GamepadUtil {
      */
     public Component[] getButtonComponents() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         Component[] components;
         components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Button).toArray();
@@ -139,7 +140,7 @@ public class GamepadUtil {
      */
     public Component[] getKeyComponents() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         Component[] components;
         components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Key).toArray();
@@ -155,7 +156,7 @@ public class GamepadUtil {
     public boolean isComponentActive(Component.Identifier identifier) {
         boolean isActive = true;
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         if (gamepad.getComponent(identifier).getPollData() == gamepad.getComponent(identifier).getDeadZone()) {
             isActive = false;
@@ -172,7 +173,7 @@ public class GamepadUtil {
     public boolean hasComponent(Component.Identifier identifier) {
         boolean isInList = false;
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         for (Component component : gamepadComponents) {
             if (component.getIdentifier() == identifier) {
@@ -189,7 +190,7 @@ public class GamepadUtil {
      */
     public ArrayList<String> getComponentsNamesAsList() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         ArrayList<String> array = new ArrayList<>();
         for (Component component : gamepadComponents) {
@@ -205,7 +206,7 @@ public class GamepadUtil {
      */
     public ArrayList<String> getComponentsIdentifiersAsList() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         ArrayList<String> array = new ArrayList<>();
         for (Component component : gamepadComponents) {
@@ -221,7 +222,7 @@ public class GamepadUtil {
      */
     public ArrayList<Float> getComponentsDataAsList() {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         ArrayList<Float> array = new ArrayList<>();
         for (Component component : gamepadComponents) {
@@ -238,7 +239,7 @@ public class GamepadUtil {
      */
     public boolean isButtonPressed(Component.Identifier identifier) {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         boolean pressed = false;
         if (identifier instanceof Component.Identifier.Button) {
@@ -257,7 +258,7 @@ public class GamepadUtil {
      */
     public float getTriggerPressure(boolean isLeft) {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         float pressure = 0.0f;
         if (hasComponent(Component.Identifier.Axis.Z)) {
@@ -399,7 +400,7 @@ public class GamepadUtil {
      */
     public GamepadDirection getDirection(GamepadAxis axis) {
         if (!isConnected()) {
-            throw new NullPointerException(ERR_NOT_CONNECTED);
+            throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
         GamepadDirection gamepadDirection = GamepadDirection.NULL;
         switch (axis) {

@@ -11,8 +11,8 @@ public interface GamepadListener {
      * Callback function to execute on update of controller component's state
      *
      * @param identifier Identifier of component which triggered the callback
-     * @param newValue New value of the component
+     * @param currentValue Current value of the component
      */
-    void onChange(Component.Identifier identifier, float newValue);
+    void onChange(Component.Identifier identifier, float currentValue);
 
 }
