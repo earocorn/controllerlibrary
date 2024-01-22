@@ -341,11 +341,62 @@ public class GamepadUtil {
         return sensitivityMap.get(identifier);
     }
 
-    private GamepadDirection getJoystickDirection(boolean isRightJoystick) {
+    /**
+     * Return directional component for X and Y Axis components
+     *
+     * @param xComponent X Axis Component. Axis.X or Axis.RX
+     * @param yComponent Y Axis Component. Axis.Y or Axis.RY
+     * @return GamepadDirection component for human readable direction component.
+     */
+    private GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
         GamepadDirection gamepadDirection = GamepadDirection.NULL;
+        float xDeadzone = xComponent.getDeadZone();
+        float yDeadzone = yComponent.getDeadZone();
+        float xValue = xComponent.getPollData();
+        float yValue = yComponent.getPollData();
+        // 1.0 > X > 0.0
+        if(xValue > xDeadzone) {
+            // 1.0 > X > 0.0 AND 1.0 > Y > 0.0
+            if(yValue > yDeadzone) {
+                gamepadDirection = GamepadDirection.DOWN_RIGHT;
+            }
+            // 1.0 > X > 0.0 AND -1.0 < Y < 0.0
+            else if(yValue < yDeadzone) {
+                gamepadDirection = GamepadDirection.UP_RIGHT;
+            }
+        }
+        // -1.0 < X < 0.0
+        else {
+            // -1.0 < X < 0.0 AND -1.0 > Y < 0.0
+            if(yValue > yDeadzone) {
+                gamepadDirection = GamepadDirection.DOWN_LEFT;
+            }
+            // -1.0 < X < 0.0 AND 1.0 > Y > 0.0
+            else if(yValue < yDeadzone) {
+                gamepadDirection = GamepadDirection.UP_LEFT;
+            }
+        }
+
+        if(xValue == 1.0 && yValue == 0.0) {
+            gamepadDirection = GamepadDirection.RIGHT;
+        } else if (xValue == -1.0 && yValue == 0.0) {
+            gamepadDirection = GamepadDirection.LEFT;
+        } else if(xValue == 0.0) {
+            if(yValue == 1.0) {
+                gamepadDirection = GamepadDirection.DOWN;
+            } else if (yValue == -1.0) {
+                gamepadDirection = GamepadDirection.UP;
+            }
+        }
         return gamepadDirection;
     }
 
+    /**
+     * Retrieve human-readable direction component for any Axis component.
+     *
+     * @param axis Axis Component, LEFT_JOYSTICK, RIGHT_JOYSTICK, or D_PAD
+     * @return Directional component given by enum GamepadDirection
+     */
     public GamepadDirection getDirection(GamepadAxis axis) {
         if (!isConnected()) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
@@ -356,22 +407,39 @@ public class GamepadUtil {
                 if (!hasComponent(Component.Identifier.Axis.X) || !hasComponent(Component.Identifier.Axis.Y)) {
                     throw new NullPointerException("Left joystick not found");
                 }
-                float xVal = getComponentValue(Component.Identifier.Axis.X);
-                float yVal = getComponentValue(Component.Identifier.Axis.Y);
+                gamepadDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.X), gamepad.getComponent(Component.Identifier.Axis.Y));
                 break;
             case RIGHT_JOYSTICK:
                 if (!hasComponent(Component.Identifier.Axis.RX) || !hasComponent(Component.Identifier.Axis.RY)) {
                     throw new NullPointerException("Right joystick not found");
                 }
-                float rxVal = getComponentValue(Component.Identifier.Axis.RX);
-                float ryVal = getComponentValue(Component.Identifier.Axis.RY);
+                gamepadDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.RX), gamepad.getComponent(Component.Identifier.Axis.RY));
                 break;
             case D_PAD:
                 if (!hasComponent(Component.Identifier.Axis.POV)) {
                     throw new NullPointerException("Right joystick not found");
                 }
                 float dpadVal = getComponentValue(Component.Identifier.Axis.POV);
+                if (dpadVal == 0.125f) {
+                    gamepadDirection = GamepadDirection.UP_LEFT;
+                } else if (dpadVal == 0.25f) {
+                    gamepadDirection = GamepadDirection.UP;
+                } else if (dpadVal == 0.375f) {
+                    gamepadDirection = GamepadDirection.UP_RIGHT;
+                } else if (dpadVal == 0.5f) {
+                    gamepadDirection = GamepadDirection.RIGHT;
+                } else if (dpadVal == 0.625f) {
+                    gamepadDirection = GamepadDirection.DOWN_RIGHT;
+                } else if (dpadVal == 0.75f) {
+                    gamepadDirection = GamepadDirection.DOWN;
+                } else if (dpadVal == 0.875f) {
+                    gamepadDirection = GamepadDirection.DOWN_LEFT;
+                } else if (dpadVal == 1.0f) {
+                    gamepadDirection = GamepadDirection.LEFT;
+                }
                 break;
         }
         return gamepadDirection;
     }
+
+}
