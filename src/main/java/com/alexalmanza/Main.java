@@ -8,14 +8,13 @@ import java.io.PrintStream;
 
 public class Main {
     public static Component[] gamepadComponents = null;
-    public static final Event event = new Event();
     public static Controller gamepad = null;
+    public static Event event = new Event();
 
     public static GamepadUtil gamepadUtil;
 
-    static{System.setProperty("java.library.path", new File("jiraw").getAbsolutePath());}
-
     public static void main(String[] args) {
+        Event event = new Event();
         File folder = new File(System.getProperty("java.library.path"));
         File[] listOfFiles = folder.listFiles();
         System.out.println(System.getProperty("java.library.path"));
@@ -27,12 +26,10 @@ public class Main {
             }
         }
         /* Get the available controllers */
-        PrintStream error=System.err;
-        System.setErr(new PrintStream(new OutputStream(){public void write(int a){}}));
+       // GamepadObserver gamepadObserver = GamepadObserver.getInstance();
         gamepadUtil = new GamepadUtil();
-        System.setErr(error);
-        GamepadObserver gamepadObserver = GamepadObserver.getInstance();
-        gamepadObserver.addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
+
+//        gamepadObserver.addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
 
         new MainFrame();
 

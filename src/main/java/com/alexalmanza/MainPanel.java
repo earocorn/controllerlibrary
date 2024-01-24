@@ -23,20 +23,21 @@ public class MainPanel extends JPanel implements ActionListener {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        g.drawString("hello !!!" , 200, 200);
 
-        for(int i = 0; i < Main.gamepadUtil.getGamepadComponents().length; i++) {
-            Component comp = Main.gamepadUtil.getGamepadComponents()[i];
-            EventQueue eventQueue = Main.gamepad.getEventQueue();
-            // stream data from controller
-            g.drawString(comp.getIdentifier() + " : " + Main.gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/Main.gamepadComponents.length)*i) + 20);
-        }
+//        for(int i = 0; i < Main.gamepadUtil.getGamepadComponents().length; i++) {
+//            Component comp = Main.gamepadUtil.getGamepadComponents()[i];
+//            EventQueue eventQueue = Main.gamepad.getEventQueue();
+//            // stream data from controller
+//            g.drawString(comp.getIdentifier() + " : " + Main.gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/Main.gamepadComponents.length)*i) + 20);
+//        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        GamepadObserver.getInstance().listen();
+//        GamepadObserver.getInstance().listen();
         // poll device for updates
-        Main.gamepad.poll();
+//        Main.gamepad.poll();
     }
 }
