@@ -1,10 +1,7 @@
 package com.alexalmanza;
 
-import net.java.games.input.Component;
+import net.java.games.input.*;
 import net.java.games.input.Component.Identifier;
-import net.java.games.input.Controller;
-import net.java.games.input.Event;
-import net.java.games.input.EventQueue;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +24,7 @@ public class GamepadObserver {
     /**
      * The controller to which the observer is applied
      */
-    private static Controller controller;
+    private static Controller gamepad;
 
     /**
      * Instance of observer for singleton
@@ -39,9 +36,15 @@ public class GamepadObserver {
      * Singleton constructor
      */
     private GamepadObserver() {
-        if(event == null || controller == null) {
+        if(event == null || gamepad == null) {
             event = new Event();
-            controller = GamepadUtil.getGamepad();
+            Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
+
+            for (Controller controller : controllers) {
+                if (controller.getType() == Controller.Type.GAMEPAD) {
+                    gamepad = controller;
+                }
+            }
         }
         gamepadListeners = new ConcurrentHashMap<>();
     }
@@ -75,9 +78,9 @@ public class GamepadObserver {
      * Method to listen for controller updates and execute callback functions of event listeners. This method should be run continuously or whenever update notifications are desired
      */
     public void listen() {
-        if(event != null && controller != null) {
+        if(event != null && gamepad != null) {
             synchronized (this) {
-            EventQueue queue = controller.getEventQueue();
+            EventQueue queue = gamepad.getEventQueue();
             if(queue.getNextEvent(event)) {
                 Component eventComponent = event.getComponent();
                 for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
