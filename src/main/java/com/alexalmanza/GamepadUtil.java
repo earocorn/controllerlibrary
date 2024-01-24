@@ -39,7 +39,7 @@ public class GamepadUtil {
         // Default environment loaded from native library. Currently, to use native libraries, set java.library.path to the path of all native libraries
         // For example, add argument -Djava.library.path="./jiraw" to launch.* with the jiraw directory containing all the native files
         gamepad = getGamepad();
-        //TODO make sure getting gamepad work
+        //TODO make sure getting gamepad works
         if (gamepad == null) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
@@ -103,6 +103,13 @@ public class GamepadUtil {
             throw new NullPointerException(ERR_NOT_CONNECTED);
         }
         return gamepad.getComponent(identifier).getPollData();
+    }
+
+    public float getComponentDeadZone(Component.Identifier identifier) {
+        if (gamepad == null) {
+            throw new NullPointerException(ERR_NOT_CONNECTED);
+        }
+        return gamepad.getComponent(identifier).getDeadZone();
     }
 
     /**
@@ -290,31 +297,18 @@ public class GamepadUtil {
      */
     public float getValueWithSensitivity(Component.Identifier identifier) {
         float value = 0.0f;
+        float incremental = 0.5f;
+        float componentValue = getComponentValue(identifier);
+        float componentDeadZone = getComponentDeadZone(identifier);
         if (sensitivityMap == null || sensitivityMap.isEmpty()) {
             return value;
         }
-        return value;
-    }
-
-    private float getSensitivityModifier(Sensitivity sensitivity) {
-        float modifier = 0.6f;
-        switch (sensitivity) {
-            case VERY_LOW:
-                modifier = 0.2f;
-                break;
-            case LOW:
-                modifier = 0.4f;
-                break;
-            case MEDIUM:
-                break;
-            case HIGH:
-                modifier = 0.8f;
-                break;
-            case VERY_HIGH:
-                modifier = 1.0f;
-                break;
+        Sensitivity componentSensitivity = sensitivityMap.get(identifier);
+        if(componentSensitivity == Sensitivity.NULL || componentSensitivity == null) {
+            return value;
         }
-        return modifier;
+        value = (componentSensitivity.ordinal() >= Sensitivity.MEDIUM.ordinal ()) ? (float) Math.pow(componentValue, componentSensitivity.getSensitivityModifier()) : componentValue * componentSensitivity.getSensitivityModifier();
+        return (value > componentDeadZone) ? value : componentValue;
     }
 
     /**
