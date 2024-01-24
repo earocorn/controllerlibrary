@@ -3,6 +3,7 @@ package com.alexalmanza;
 import net.java.games.input.*;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class Main {
@@ -26,7 +27,10 @@ public class Main {
             }
         }
         /* Get the available controllers */
+        PrintStream error=System.err;
+        System.setErr(new PrintStream(new OutputStream(){public void write(int a){}}));
         gamepadUtil = new GamepadUtil();
+        System.setErr(error);
         GamepadObserver gamepadObserver = GamepadObserver.getInstance();
         gamepadObserver.addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
 
