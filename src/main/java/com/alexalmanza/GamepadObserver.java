@@ -37,14 +37,8 @@ public class GamepadObserver {
      */
     private GamepadObserver() {
         if(event == null || gamepad == null) {
-            event = new Event();
-            Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-
-            for (Controller controller : controllers) {
-                if (controller.getType() == Controller.Type.GAMEPAD) {
-                    gamepad = controller;
-                }
-            }
+            event = GamepadInit.getInstance().getEvent();
+            gamepad = GamepadInit.getInstance().getGamepad();
         }
         gamepadListeners = new ConcurrentHashMap<>();
     }
@@ -60,18 +54,6 @@ public class GamepadObserver {
             //TODO ensure singleton works
         }
         return gamepadObserver;
-    }
-
-    /**
-     * Get current Event for use of JInput library
-     *
-     * @return current event instance
-     */
-    public Event getEvent() {
-        if(event == null) {
-            event = new Event();
-        }
-        return event;
     }
 
     /**

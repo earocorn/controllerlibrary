@@ -38,14 +38,7 @@ public class GamepadUtil {
         // https://jinput.github.io/jinput/
         // Default environment loaded from native library. Currently, to use native libraries, set java.library.path to the path of all native libraries
         // For example, add argument -Djava.library.path="./jiraw" to launch.* with the jiraw directory containing all the native files
-
-        Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-
-        for (Controller controller : controllers) {
-            if (controller.getType() == Controller.Type.GAMEPAD) {
-                gamepad = controller;
-            }
-        }
+        gamepad = GamepadInit.getInstance().getGamepad();
         //TODO make sure getting gamepad works
         if (gamepad == null) {
             throw new NullPointerException(ERR_NOT_CONNECTED);
