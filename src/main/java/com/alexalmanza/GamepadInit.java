@@ -6,7 +6,7 @@ import net.java.games.input.Event;
 
 public class GamepadInit {
 
-    private Event event;
+    private Event event = null;
 
     private Controller gamepad;
 

@@ -2,7 +2,6 @@ package com.alexalmanza;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +46,18 @@ public class GamepadUtil {
         gamepadComponents = gamepad.getComponents();
 
         sensitivityMap = new ConcurrentHashMap<>();
+    }
+
+    /**
+     *
+     *
+     * @return current gamepad
+     */
+    public Controller getGamepad() {
+        if(gamepad == null) {
+            throw new NullPointerException("Gamepad is null.");
+        }
+        return gamepad;
     }
 
     /**
