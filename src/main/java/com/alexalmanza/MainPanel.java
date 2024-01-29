@@ -12,8 +12,12 @@ public class MainPanel extends JPanel implements ActionListener {
 
     Timer timer;
 
+    GamepadUtil gamepadUtil;
+
     public MainPanel() {
         timer = new Timer(100, this);
+
+        GamepadUtil gamepadUtil = new GamepadUtil();
 
         setSize(Util.windowDimension);
 
@@ -25,12 +29,11 @@ public class MainPanel extends JPanel implements ActionListener {
         super.paint(g);
         g.drawString("hello !!!" , 200, 200);
 
-//        for(int i = 0; i < Main.gamepadUtil.getGamepadComponents().length; i++) {
-//            Component comp = Main.gamepadUtil.getGamepadComponents()[i];
-//            EventQueue eventQueue = Main.gamepad.getEventQueue();
-//            // stream data from controller
-//            g.drawString(comp.getIdentifier() + " : " + Main.gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/Main.gamepadComponents.length)*i) + 20);
-//        }
+        for(int i = 0; i < gamepadUtil.getGamepadComponents().length; i++) {
+            Component comp = gamepadUtil.getGamepadComponents()[i];
+            // stream data from controller
+            g.drawString(comp.getIdentifier() + " : " + gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/gamepadUtil.getGamepadComponents().length)*i) + 20);
+        }
     }
 
     @Override

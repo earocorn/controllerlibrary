@@ -9,12 +9,9 @@ import java.io.PrintStream;
 public class Main {
     public static Component[] gamepadComponents = null;
     public static Controller gamepad = null;
-    public static Event event = new Event();
-
     public static GamepadUtil gamepadUtil;
 
     public static void main(String[] args) {
-        Event event = new Event();
         File folder = new File(System.getProperty("java.library.path"));
         File[] listOfFiles = folder.listFiles();
         System.out.println(System.getProperty("java.library.path"));
@@ -26,13 +23,11 @@ public class Main {
             }
         }
         /* Get the available controllers */
-       // GamepadObserver gamepadObserver = GamepadObserver.getInstance();
-        gamepadUtil = new GamepadUtil();
+        //GamepadObserver gamepadObserver = GamepadObserver.getInstance();
 
 //        gamepadObserver.addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
 
         new MainFrame();
-
 
     }
 }

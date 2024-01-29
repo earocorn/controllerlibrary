@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="com.alexalmanza.Main" />
     <module name="controllerlibrary" />
-    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;./jiraw&quot;" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;&quot;./jiraw&quot;&quot;" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
