@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Class to listen for controller input events registered as GamepadListener objects
  */
-public class GamepadObserver {
+public class GamepadObserver implements Runnable {
 
     /**
      * The list of event listeners registered to this observer
@@ -32,6 +32,20 @@ public class GamepadObserver {
      */
     private static GamepadObserver gamepadObserver;
 
+    /**
+     * Lock for thread safety
+     */
+    private static final Object lock = new Object();
+
+    /**
+     * Worker thread for observing events
+     */
+    private Thread worker;
+
+    private final String threadName = "GamepadObserverThread";
+
+    private boolean running = false;
+
     //TODO convert to singleton and have its own thread to use listeners
     /**
      * Singleton constructor
@@ -50,30 +64,44 @@ public class GamepadObserver {
      * @return Current instance of GamepadObserver
      */
     public static GamepadObserver getInstance() {
-        if(gamepadObserver == null) {
-            gamepadObserver = new GamepadObserver();
-            //TODO ensure singleton works
-        }
-        return gamepadObserver;
-    }
-
-    /**
-     * Method to listen for controller updates and execute callback functions of event listeners. This method should be run continuously or whenever update notifications are desired
-     */
-    public void listen() {
-        if(event != null && gamepad != null) {
-            synchronized (this) {
-            EventQueue queue = gamepad.getEventQueue();
-            if(queue.getNextEvent(event)) {
-                Component eventComponent = event.getComponent();
-                for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
-                    if(eventComponent.getIdentifier() == entry.getKey()) {
-                            entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
-                        }
-                    }
+        GamepadObserver result = gamepadObserver;
+        if(result == null) {
+            synchronized (lock) {
+                result = gamepadObserver;
+                if(result == null) {
+                    gamepadObserver = result = new GamepadObserver();
                 }
             }
         }
+        return result;
+    }
+
+    /**
+     * Starts the worker thread to listen for events
+     */
+    public void doStart() {
+        if(worker.isAlive()) {
+            throw new IllegalStateException("Observer is already listening for events");
+        }
+        running = true;
+        worker = new Thread(this, this.threadName);
+        worker.start();
+    }
+
+    /**
+     * Stop observer's worker thread
+     */
+    public void doStop() {
+        running = false;
+        System.out.println("Observer stopped manually");
+    }
+
+    /**
+     * Check if observer's worker thread is running
+     */
+    public boolean isRunning() {
+        running = worker.isAlive();
+        return running;
     }
 
     /**
@@ -96,4 +124,28 @@ public class GamepadObserver {
         gamepadListeners.remove(identifier, listener);
     }
 
+    /**
+     * Thread worker used for listening for controller events
+     */
+    @Override
+    public void run() {
+
+        if(!running) {
+            return;
+        }
+
+        if(event != null && gamepad != null) {
+            synchronized (this) {
+                EventQueue queue = gamepad.getEventQueue();
+                if(queue.getNextEvent(event)) {
+                    Component eventComponent = event.getComponent();
+                    for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
+                        if(eventComponent.getIdentifier() == entry.getKey()) {
+                            entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

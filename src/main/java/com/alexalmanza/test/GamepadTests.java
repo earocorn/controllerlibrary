@@ -27,6 +27,7 @@ public class GamepadTests {
         observer = GamepadObserver.getInstance();
         GamepadListener testListener = (identifier, currentValue) -> System.out.println(identifier + " : " + currentValue);
         observer.addListener(testListener, Component.Identifier.Button._0);
+        observer.doStart();
     }
 
     @Test
@@ -123,5 +124,25 @@ public class GamepadTests {
     // Need to test sensitivity, direction, trigger pressure manually
 
     // Observer test
+
+    @Test
+    void observerRunning() {
+        Assertions.assertTrue(observer.isRunning());
+    }
+
+    @Test
+    void stopOrRestartObserver() {
+        observer.doStop();
+        Assertions.assertFalse(observer.isRunning());
+    }
+
+    @Test
+    void startOrRestartObserver() {
+        if(observer.isRunning()) {
+            observer.doStop();
+        }
+        observer.doStart();
+        Assertions.assertTrue(observer.isRunning());
+    }
 
 }
