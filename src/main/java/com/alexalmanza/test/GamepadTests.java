@@ -13,11 +13,10 @@ import org.junit.jupiter.api.Test;
 
 public class GamepadTests {
 
-    private static GamepadUtil gamepadUtil;
+    private static final GamepadUtil gamepadUtil = new GamepadUtil();
     private static GamepadObserver observer;
     @BeforeAll
     static void setUp() {
-        gamepadUtil = new GamepadUtil();
         try{
             gamepadUtil.setSensitivity(Component.Identifier.Axis.X, Sensitivity.HIGH);
         } catch (Exception e) {
