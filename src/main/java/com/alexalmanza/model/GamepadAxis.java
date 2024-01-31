@@ -1,4 +1,4 @@
-package com.alexalmanza;
+package com.alexalmanza.model;
 
 public enum GamepadAxis {
 

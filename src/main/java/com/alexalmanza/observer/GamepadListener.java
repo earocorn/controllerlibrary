@@ -1,4 +1,4 @@
-package com.alexalmanza;
+package com.alexalmanza.observer;
 
 import net.java.games.input.Component;
 

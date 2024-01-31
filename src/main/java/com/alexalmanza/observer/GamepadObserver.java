@@ -1,5 +1,6 @@
-package com.alexalmanza;
+package com.alexalmanza.observer;
 
+import com.alexalmanza.GamepadInit;
 import net.java.games.input.*;
 import net.java.games.input.Component.Identifier;
 

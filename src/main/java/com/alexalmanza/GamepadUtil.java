@@ -1,5 +1,8 @@
 package com.alexalmanza;
 
+import com.alexalmanza.model.GamepadAxis;
+import com.alexalmanza.model.GamepadDirection;
+import com.alexalmanza.model.Sensitivity;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 
@@ -26,7 +29,7 @@ public class GamepadUtil {
     /**
      * Map of joystick sensitivities
      */
-    private Map<Component.Identifier, Sensitivity> sensitivityMap;
+    private Map<Component.Identifier, com.alexalmanza.model.Sensitivity> sensitivityMap;
     private final String ERR_NOT_CONNECTED = "A gamepad is not connected.";
 
     /**
@@ -298,11 +301,11 @@ public class GamepadUtil {
         if (sensitivityMap == null || sensitivityMap.isEmpty()) {
             return value;
         }
-        Sensitivity componentSensitivity = sensitivityMap.get(identifier);
-        if(componentSensitivity == Sensitivity.NULL || componentSensitivity == null) {
+        com.alexalmanza.model.Sensitivity componentSensitivity = sensitivityMap.get(identifier);
+        if(componentSensitivity == com.alexalmanza.model.Sensitivity.NULL || componentSensitivity == null) {
             return value;
         }
-        value = (componentSensitivity.ordinal() >= Sensitivity.MEDIUM.ordinal ()) ? (float) Math.pow(componentValue, componentSensitivity.getSensitivityModifier()) : componentValue * componentSensitivity.getSensitivityModifier();
+        value = (componentSensitivity.ordinal() >= com.alexalmanza.model.Sensitivity.MEDIUM.ordinal ()) ? (float) Math.pow(componentValue, componentSensitivity.getSensitivityModifier()) : componentValue * componentSensitivity.getSensitivityModifier();
         return (value > componentDeadZone) ? value : componentValue;
     }
 
@@ -312,7 +315,7 @@ public class GamepadUtil {
      * @param identifier  Identifies component
      * @param sensitivity Sensitivity value
      */
-    public void setSensitivity(Component.Identifier identifier, Sensitivity sensitivity) {
+    public void setSensitivity(Component.Identifier identifier, com.alexalmanza.model.Sensitivity sensitivity) {
         if (sensitivityMap == null) {
             throw new NullPointerException("Sensitivity hashmap is null");
         }
@@ -338,8 +341,8 @@ public class GamepadUtil {
      * @param yComponent Y Axis Component. Axis.Y or Axis.RY
      * @return GamepadDirection component for human readable direction component.
      */
-    private GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
-        GamepadDirection gamepadDirection = GamepadDirection.NULL;
+    private com.alexalmanza.model.GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
+        com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
         float xDeadzone = xComponent.getDeadZone();
         float yDeadzone = yComponent.getDeadZone();
         float xValue = xComponent.getPollData();
@@ -348,34 +351,34 @@ public class GamepadUtil {
         if(xValue > xDeadzone) {
             // 1.0 > X > 0.0 AND 1.0 > Y > 0.0
             if(yValue > yDeadzone) {
-                gamepadDirection = GamepadDirection.DOWN_RIGHT;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_RIGHT;
             }
             // 1.0 > X > 0.0 AND -1.0 < Y < 0.0
             else if(yValue < yDeadzone) {
-                gamepadDirection = GamepadDirection.UP_RIGHT;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_RIGHT;
             }
         }
         // -1.0 < X < 0.0
         else {
             // -1.0 < X < 0.0 AND -1.0 > Y < 0.0
             if(yValue > yDeadzone) {
-                gamepadDirection = GamepadDirection.DOWN_LEFT;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_LEFT;
             }
             // -1.0 < X < 0.0 AND 1.0 > Y > 0.0
             else if(yValue < yDeadzone) {
-                gamepadDirection = GamepadDirection.UP_LEFT;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_LEFT;
             }
         }
 
         if(xValue == 1.0 && yValue == 0.0) {
-            gamepadDirection = GamepadDirection.RIGHT;
+            gamepadDirection = com.alexalmanza.model.GamepadDirection.RIGHT;
         } else if (xValue == -1.0 && yValue == 0.0) {
-            gamepadDirection = GamepadDirection.LEFT;
+            gamepadDirection = com.alexalmanza.model.GamepadDirection.LEFT;
         } else if(xValue == 0.0) {
             if(yValue == 1.0) {
-                gamepadDirection = GamepadDirection.DOWN;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN;
             } else if (yValue == -1.0) {
-                gamepadDirection = GamepadDirection.UP;
+                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP;
             }
         }
         return gamepadDirection;
@@ -387,11 +390,11 @@ public class GamepadUtil {
      * @param axis Axis Component, LEFT_JOYSTICK, RIGHT_JOYSTICK, or D_PAD
      * @return Directional component given by enum GamepadDirection
      */
-    public GamepadDirection getDirection(GamepadAxis axis) {
+    public com.alexalmanza.model.GamepadDirection getDirection(GamepadAxis axis) {
         if (!isConnected()) {
             throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
-        GamepadDirection gamepadDirection = GamepadDirection.NULL;
+        com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
         switch (axis) {
             case LEFT_JOYSTICK:
                 if (!hasComponent(Component.Identifier.Axis.X) || !hasComponent(Component.Identifier.Axis.Y)) {
@@ -411,19 +414,19 @@ public class GamepadUtil {
                 }
                 float dpadVal = getComponentValue(Component.Identifier.Axis.POV);
                 if (dpadVal == 0.125f) {
-                    gamepadDirection = GamepadDirection.UP_LEFT;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_LEFT;
                 } else if (dpadVal == 0.25f) {
-                    gamepadDirection = GamepadDirection.UP;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP;
                 } else if (dpadVal == 0.375f) {
-                    gamepadDirection = GamepadDirection.UP_RIGHT;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_RIGHT;
                 } else if (dpadVal == 0.5f) {
-                    gamepadDirection = GamepadDirection.RIGHT;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.RIGHT;
                 } else if (dpadVal == 0.625f) {
-                    gamepadDirection = GamepadDirection.DOWN_RIGHT;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_RIGHT;
                 } else if (dpadVal == 0.75f) {
-                    gamepadDirection = GamepadDirection.DOWN;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN;
                 } else if (dpadVal == 0.875f) {
-                    gamepadDirection = GamepadDirection.DOWN_LEFT;
+                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_LEFT;
                 } else if (dpadVal == 1.0f) {
                     gamepadDirection = GamepadDirection.LEFT;
                 }
