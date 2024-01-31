@@ -316,6 +316,7 @@ public class GamepadUtil {
      * @param sensitivity Sensitivity value
      */
     public void setSensitivity(Component.Identifier identifier, com.alexalmanza.model.Sensitivity sensitivity) {
+        //TODO: assert only joystick sensitivity to be set
         if (sensitivityMap == null) {
             throw new NullPointerException("Sensitivity hashmap is null");
         }
@@ -341,7 +342,7 @@ public class GamepadUtil {
      * @param yComponent Y Axis Component. Axis.Y or Axis.RY
      * @return GamepadDirection component for human readable direction component.
      */
-    private com.alexalmanza.model.GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
+    private GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
         com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
         float xDeadzone = xComponent.getDeadZone();
         float yDeadzone = yComponent.getDeadZone();
