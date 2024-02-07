@@ -2,6 +2,7 @@ package com.alexalmanza.test;
 
 import com.alexalmanza.GamepadInit;
 import com.alexalmanza.GamepadUtil;;
+import com.alexalmanza.model.GamepadAxis;
 import com.alexalmanza.model.Sensitivity;
 import com.alexalmanza.observer.GamepadListener;
 import com.alexalmanza.observer.GamepadObserver;
@@ -18,7 +19,7 @@ public class GamepadTests {
     @BeforeAll
     static void setUp() {
         try{
-            gamepadUtil.setSensitivity(Component.Identifier.Axis.X, Sensitivity.HIGH);
+            gamepadUtil.setSensitivity(GamepadAxis.LEFT_JOYSTICK, Sensitivity.HIGH);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,7 +113,7 @@ public class GamepadTests {
 
     @Test
     void setAndGetSensitivity() {
-        Assertions.assertEquals(Sensitivity.HIGH, gamepadUtil.getSensitivity(Component.Identifier.Axis.X));
+        Assertions.assertEquals(Sensitivity.HIGH, gamepadUtil.getSensitivity(GamepadAxis.LEFT_JOYSTICK));
     }
 
     @Test

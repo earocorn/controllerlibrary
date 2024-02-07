@@ -312,15 +312,27 @@ public class GamepadUtil {
     /**
      * Set the sensitivity value for the identified component
      *
-     * @param identifier  Identifies component
+     * @param axis  Identifies axis component
      * @param sensitivity Sensitivity value
      */
-    public void setSensitivity(Component.Identifier identifier, com.alexalmanza.model.Sensitivity sensitivity) {
+    public void setSensitivity(GamepadAxis axis, com.alexalmanza.model.Sensitivity sensitivity) {
         //TODO: assert only joystick sensitivity to be set
         if (sensitivityMap == null) {
             throw new NullPointerException("Sensitivity hashmap is null");
         }
-        sensitivityMap.put(identifier, sensitivity);
+        if (axis == GamepadAxis.D_PAD) {
+            throw new IllegalStateException("Sensitivity must only be applied to joysticks");
+        }
+        switch (axis) {
+            case LEFT_JOYSTICK -> {
+                sensitivityMap.put(Component.Identifier.Axis.X, sensitivity);
+                sensitivityMap.put(Component.Identifier.Axis.Y, sensitivity);
+            }
+            case RIGHT_JOYSTICK -> {
+                sensitivityMap.put(Component.Identifier.Axis.RX, sensitivity);
+                sensitivityMap.put(Component.Identifier.Axis.RY, sensitivity);
+            }
+        }
     }
 
     /**
@@ -328,11 +340,11 @@ public class GamepadUtil {
      *
      * @return Sensitivity of component given identifier
      */
-    public Sensitivity getSensitivity(Component.Identifier identifier) {
+    public Sensitivity getSensitivity(GamepadAxis axis) {
         if (sensitivityMap == null || sensitivityMap.isEmpty()) {
             throw new NullPointerException("Sensitivity hashmap is null");
         }
-        return sensitivityMap.get(identifier);
+        return sensitivityMap.get(axis == GamepadAxis.LEFT_JOYSTICK ? Component.Identifier.Axis.X : Component.Identifier.Axis.RX);
     }
 
     /**
