@@ -423,7 +423,7 @@ public class GamepadUtil {
                 break;
             case D_PAD:
                 if (!hasComponent(Component.Identifier.Axis.POV)) {
-                    throw new NullPointerException("Right joystick not found");
+                    throw new NullPointerException("D-Pad not found");
                 }
                 float dpadVal = getComponentValue(Component.Identifier.Axis.POV);
                 if (dpadVal == 0.125f) {
