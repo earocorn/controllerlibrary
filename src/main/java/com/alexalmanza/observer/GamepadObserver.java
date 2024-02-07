@@ -20,7 +20,7 @@ public class GamepadObserver implements Runnable {
     /**
      * Event object for underlying plugin to populate
      */
-    private static Event event;
+    private Event event;
 
     /**
      * The controller to which the observer is applied
@@ -51,11 +51,18 @@ public class GamepadObserver implements Runnable {
      * Singleton constructor
      */
     private GamepadObserver() {
-        if(event == null || gamepad == null) {
-            event = GamepadInit.getInstance().getEvent();
-            gamepad = GamepadInit.getInstance().getGamepad();
-        }
+        event = GamepadInit.getInstance().getEvent();
+        gamepad = GamepadInit.getInstance().getGamepad();
         gamepadListeners = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * test to set Event
+     *
+     * @param event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     /**
