@@ -80,7 +80,7 @@ public class GamepadObserver implements Runnable {
      * Starts the worker thread to listen for events
      */
     public void doStart() {
-        if(worker.isAlive()) {
+        if(worker != null && worker.isAlive()) {
             throw new IllegalStateException("Observer is already listening for events");
         }
         running = true;
@@ -129,19 +129,16 @@ public class GamepadObserver implements Runnable {
      */
     @Override
     public void run() {
-
-        if(!running) {
-            return;
-        }
-
-        if(event != null && gamepad != null) {
-            synchronized (this) {
-                EventQueue queue = gamepad.getEventQueue();
-                if(queue.getNextEvent(event)) {
-                    Component eventComponent = event.getComponent();
-                    for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
-                        if(eventComponent.getIdentifier() == entry.getKey()) {
-                            entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
+        while(running) {
+            if(event != null && gamepad != null) {
+                synchronized (this) {
+                    EventQueue queue = gamepad.getEventQueue();
+                    if(queue.getNextEvent(event)) {
+                        Component eventComponent = event.getComponent();
+                        for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
+                            if(eventComponent.getIdentifier() == entry.getKey()) {
+                                entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
+                            }
                         }
                     }
                 }
