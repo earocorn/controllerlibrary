@@ -46,27 +46,25 @@ public class GamepadObserver implements Runnable {
 
     private boolean running = false;
 
-    //TODO convert to singleton and have its own thread to use listeners
     /**
      * Singleton constructor
      */
     private GamepadObserver() {
-        event = GamepadInit.getInstance().getEvent();
         gamepad = GamepadInit.getInstance().getGamepad();
         gamepadListeners = new ConcurrentHashMap<>();
     }
 
     /**
-     * test to set Event
+     * Set Event object for library
      *
-     * @param event
+     * @param event Instance of Event to use with library
      */
     public void setEvent(Event event) {
         this.event = event;
     }
 
     /**
-     * Get instance of singleton class
+     * Get instance of singleton class. NOTE: Need to set event using setEvent() of a new instance of an Event object
      *
      * @return Current instance of GamepadObserver
      */
@@ -87,6 +85,9 @@ public class GamepadObserver implements Runnable {
      * Starts the worker thread to listen for events
      */
     public void doStart() {
+        if(event == null) {
+            throw new IllegalStateException("Event must be initialized and set using setEvent()");
+        }
         if(worker != null && worker.isAlive()) {
             throw new IllegalStateException("Observer is already listening for events");
         }

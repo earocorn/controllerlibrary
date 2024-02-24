@@ -1,0 +1,1 @@
+"-Djava.library.path=<path to natives>" must be specified as VM argument

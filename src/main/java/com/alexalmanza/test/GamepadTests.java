@@ -41,11 +41,6 @@ public class GamepadTests {
     }
 
     @Test
-    void eventNotNull() {
-        Assertions.assertNotNull(GamepadInit.getInstance().getEvent());
-    }
-
-    @Test
     void controllerExists() {
         Assertions.assertInstanceOf(Controller.class, gamepadUtil.getGamepad());
     }
@@ -121,9 +116,24 @@ public class GamepadTests {
         Assertions.assertEquals(0.0f, gamepadUtil.getValueWithSensitivity(Component.Identifier.Axis.X));
     }
 
+    @Test
+    void correctMaxValue() {
+        Assertions.assertEquals(1.0f, gamepadUtil.getMaxValue(Component.Identifier.Axis.X));
+    }
+
+    @Test
+    void correctMinValue() {
+        Assertions.assertEquals(-1.0f, gamepadUtil.getMinValue(Component.Identifier.Axis.X));
+    }
+
     // Need to test sensitivity, direction, trigger pressure manually
 
     // Observer test
+
+    @Test
+    void noEventThrowsException() {
+        Assertions.assertThrows(IllegalStateException.class, () -> observer.doStart());
+    }
 
     @Test
     void observerRunning() {

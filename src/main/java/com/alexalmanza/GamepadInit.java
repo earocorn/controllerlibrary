@@ -2,18 +2,26 @@ package com.alexalmanza;
 
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import net.java.games.input.Event;
 
+/**
+ * Class to initialize necessary objects
+ */
 public class GamepadInit {
 
-    private Event event;
-
+    /**
+     * Globally-used gamepad controller
+     */
     private Controller gamepad;
 
+    /**
+     * Instance of GamepadInit for singleton
+     */
     private static GamepadInit instance = null;
 
+    /**
+     * Singleton constructor
+     */
     private GamepadInit() {
-        event = new Event();
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 
         for (Controller controller : controllers) {
@@ -23,6 +31,11 @@ public class GamepadInit {
         }
     }
 
+    /**
+     * Get current instance of singleton class
+     *
+     * @return Current instance of GamepadInit
+     */
     public static GamepadInit getInstance() {
         if(instance == null) {
             instance = new GamepadInit();
@@ -31,17 +44,10 @@ public class GamepadInit {
     }
 
     /**
-     * Get current Event for use of JInput library
+     * Get current gamepad
      *
-     * @return current event instance
+     * @return Current gamepad
      */
-    public Event getEvent() {
-        if(event == null) {
-            throw new NullPointerException("Event has not been initialized.");
-        }
-        return event;
-    }
-
     public Controller getGamepad() {
         if(gamepad == null) {
             throw new NullPointerException("Gamepad has not been initialized.");

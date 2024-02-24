@@ -348,6 +348,17 @@ public class GamepadUtil {
     }
 
     /**
+     * Determine if an Axis Component Value is its initial value which lies somewhere between -0.0001 and -0.0000001
+     *
+     * @param number Axis Component Value
+     * @return True if in range
+     */
+    private boolean isInInitialAxisRange(float number) {
+        return (-0.0001 < number && number < -0.0000001);
+    }
+
+
+    /**
      * Return directional component for X and Y Axis components
      *
      * @param xComponent X Axis Component. Axis.X or Axis.RX
@@ -356,46 +367,77 @@ public class GamepadUtil {
      */
     private GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
         com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
-        float xDeadzone = xComponent.getDeadZone();
-        float yDeadzone = yComponent.getDeadZone();
         float xValue = xComponent.getPollData();
         float yValue = yComponent.getPollData();
+
         // 1.0 > X > 0.0
-        if(xValue > xDeadzone) {
+        if(xValue > 0.0f) {
             // 1.0 > X > 0.0 AND 1.0 > Y > 0.0
-            if(yValue > yDeadzone) {
+            if(yValue > 0.0f) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_RIGHT;
             }
             // 1.0 > X > 0.0 AND -1.0 < Y < 0.0
-            else if(yValue < yDeadzone) {
+            else if(yValue < 0.0f) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_RIGHT;
             }
         }
         // -1.0 < X < 0.0
         else {
             // -1.0 < X < 0.0 AND -1.0 > Y < 0.0
-            if(yValue > yDeadzone) {
+            if(yValue > 0.0f) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_LEFT;
             }
             // -1.0 < X < 0.0 AND 1.0 > Y > 0.0
-            else if(yValue < yDeadzone) {
+            else if(yValue < 0.0f) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_LEFT;
             }
         }
 
-        if(xValue == 1.0 && yValue == 0.0) {
+        if(xValue == 1.0 && isInInitialAxisRange(yValue)) {
             gamepadDirection = com.alexalmanza.model.GamepadDirection.RIGHT;
-        } else if (xValue == -1.0 && yValue == 0.0) {
+        } else if (xValue == -1.0 && isInInitialAxisRange(yValue)) {
             gamepadDirection = com.alexalmanza.model.GamepadDirection.LEFT;
-        } else if(xValue == 0.0) {
+        } else if(isInInitialAxisRange(xValue)) {
             if(yValue == 1.0) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN;
             } else if (yValue == -1.0) {
                 gamepadDirection = com.alexalmanza.model.GamepadDirection.UP;
             }
         }
+
+        if(isInInitialAxisRange(xValue) && isInInitialAxisRange(yValue)) {
+            gamepadDirection = GamepadDirection.NULL;
+        }
+
         return gamepadDirection;
     }
+
+    /**
+     * Get minimum possible value for component
+     *
+     * @param identifier Component identifier
+     * @return Minimum value
+     */
+    public float getMinValue(Component.Identifier identifier) {
+        float minValue = 0.0f;
+
+        if(identifier instanceof Component.Identifier.Axis && identifier != Component.Identifier.Axis.POV) {
+            minValue = -1.0f;
+        }
+
+        return minValue;
+    }
+
+    /**
+     * Get maximum possible value for component
+     *
+     * @param identifier Component identifier
+     * @return Maximum value
+     */
+    public float getMaxValue(Component.Identifier identifier) {
+        return 1.0f;
+    }
+
 
     /**
      * Retrieve human-readable direction component for any Axis component.
