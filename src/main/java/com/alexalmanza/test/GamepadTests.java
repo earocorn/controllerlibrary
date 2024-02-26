@@ -8,6 +8,7 @@ import com.alexalmanza.observer.GamepadListener;
 import com.alexalmanza.observer.GamepadObserver;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
+import net.java.games.input.Event;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ public class GamepadTests {
     private static GamepadObserver observer;
     @BeforeAll
     static void setUp() {
+        Event event = new Event();
         try{
             gamepadUtil.setSensitivity(GamepadAxis.LEFT_JOYSTICK, Sensitivity.HIGH);
         } catch (Exception e) {
@@ -25,6 +27,7 @@ public class GamepadTests {
         }
 
         observer = GamepadObserver.getInstance();
+        observer.setEvent(event);
         GamepadListener testListener = (identifier, currentValue) -> System.out.println(identifier + " : " + currentValue);
         observer.addListener(testListener, Component.Identifier.Button._0);
         observer.doStart();

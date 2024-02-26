@@ -119,8 +119,12 @@ public class GamepadUtil {
         if (!isConnected()) {
             throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
-        Component[] components;
-        components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Axis).toArray();
+        Component[] components = null;
+        try{
+            components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Axis).toArray();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return components;
     }
 
@@ -133,8 +137,12 @@ public class GamepadUtil {
         if (!isConnected()) {
             throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
-        Component[] components;
-        components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Button).toArray();
+        Component[] components = null;
+        try {
+            components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Button).toArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return components;
     }
 
@@ -147,8 +155,12 @@ public class GamepadUtil {
         if (!isConnected()) {
             throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
-        Component[] components;
-        components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Key).toArray();
+        Component[] components = null;
+        try {
+            components = (Component[]) Arrays.stream(gamepadComponents).filter(x -> x.getIdentifier() instanceof Component.Identifier.Key).toArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return components;
     }
 
