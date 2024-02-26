@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"com.alexalmanza","l":"GamepadEvent"},{"p":"com.alexalmanza","l":"GamepadEventObserver"},{"p":"com.alexalmanza","l":"GamepadUtil"}]
