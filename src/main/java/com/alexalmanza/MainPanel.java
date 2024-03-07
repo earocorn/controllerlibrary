@@ -12,12 +12,10 @@ public class MainPanel extends JPanel implements ActionListener {
 
     Timer timer;
 
-    GamepadUtil gamepadUtil;
+    GamepadUtil gamepadUtil = Main.gamepadUtil;
 
     public MainPanel() {
         timer = new Timer(100, this);
-
-        GamepadUtil gamepadUtil = new GamepadUtil();
 
         setSize(Util.windowDimension);
 
@@ -39,8 +37,6 @@ public class MainPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-//        GamepadObserver.getInstance().listen();
-        // poll device for updates
-//        Main.gamepad.poll();
+        gamepadUtil.pollGamepad();
     }
 }
