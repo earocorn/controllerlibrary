@@ -4,15 +4,15 @@ import net.java.games.input.Component;
 import net.java.games.input.EventQueue;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Random;
 
 public class MainPanel extends JPanel implements ActionListener {
 
     Timer timer;
-
-    GamepadUtil gamepadUtil = Main.gamepadUtil;
+    int mover = 0;
 
     public MainPanel() {
         timer = new Timer(100, this);
@@ -25,18 +25,15 @@ public class MainPanel extends JPanel implements ActionListener {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.drawString("hello !!!" , 200, 200);
+        g.drawString("HELLO THIS IS A TEST GUI !!!" , 200, 200);
 
-        for(int i = 0; i < gamepadUtil.getGamepadComponents().length; i++) {
-            Component comp = gamepadUtil.getGamepadComponents()[i];
-            // stream data from controller
-            g.drawString(comp.getIdentifier() + " : " + gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/gamepadUtil.getGamepadComponents().length)*i) + 20);
-        }
+        g.setColor(Color.PINK);
+        g.fillOval(mover+20, mover+20, 30, 30);
+        mover+=10;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        gamepadUtil.pollGamepad();
     }
 }
