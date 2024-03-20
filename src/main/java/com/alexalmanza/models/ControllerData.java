@@ -1,4 +1,4 @@
-package com.alexalmanza.model;
+package com.alexalmanza.models;
 
 import java.util.concurrent.ConcurrentHashMap;
 

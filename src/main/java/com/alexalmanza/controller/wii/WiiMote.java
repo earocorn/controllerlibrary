@@ -1,6 +1,6 @@
 package com.alexalmanza.controller.wii;
 
-import com.alexalmanza.model.IController;
+import com.alexalmanza.interfaces.IController;
 
 public class WiiMote implements IController {
 

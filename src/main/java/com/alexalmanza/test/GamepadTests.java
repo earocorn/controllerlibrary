@@ -2,9 +2,9 @@ package com.alexalmanza.test;
 
 import com.alexalmanza.GamepadUtil;;
 import com.alexalmanza.controller.gamepad.GamepadAxis;
-import com.alexalmanza.model.Sensitivity;
-import com.alexalmanza.observer.GamepadListener;
-import com.alexalmanza.observer.GamepadObserver;
+import com.alexalmanza.models.Sensitivity;
+import com.alexalmanza.models.ControllerUpdateListener;
+import com.alexalmanza.controller.gamepad.observer.GamepadObserver;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
@@ -27,7 +27,7 @@ public class GamepadTests {
 
         observer = GamepadObserver.getInstance();
         observer.setEvent(event);
-        GamepadListener testListener = (identifier, currentValue) -> System.out.println(identifier + " : " + currentValue);
+        ControllerUpdateListener testListener = (identifier, currentValue) -> System.out.println(identifier + " : " + currentValue);
         observer.addListener(testListener, Component.Identifier.Button._0);
         observer.doStart();
     }

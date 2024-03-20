@@ -1,6 +1,8 @@
-package com.alexalmanza.observer;
+package com.alexalmanza.controller.gamepad.observer;
 
 import com.alexalmanza.GamepadInit;
+import com.alexalmanza.interfaces.IObserver;
+import com.alexalmanza.models.ControllerUpdateListener;
 import net.java.games.input.*;
 import net.java.games.input.Component.Identifier;
 
@@ -8,14 +10,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class to listen for controller input events registered as GamepadListener objects
+ * Class to listen for controller input events registered as ControllerUpdateListener objects
  */
-public class GamepadObserver implements Runnable {
+public class GamepadObserver implements IObserver {
 
     /**
      * The list of event listeners registered to this observer
      */
-    private Map<Identifier, GamepadListener> gamepadListeners;
+    private Map<Identifier, ControllerUpdateListener> gamepadListeners;
 
     /**
      * Event object for underlying plugin to populate
@@ -84,6 +86,7 @@ public class GamepadObserver implements Runnable {
     /**
      * Starts the worker thread to listen for events
      */
+    @Override
     public void doStart() {
         try {
             if(event == null) {
@@ -103,6 +106,7 @@ public class GamepadObserver implements Runnable {
     /**
      * Stop observer's worker thread
      */
+    @Override
     public void doStop() {
         running = false;
         System.out.println("Observer stopped manually");
@@ -111,6 +115,7 @@ public class GamepadObserver implements Runnable {
     /**
      * Check if observer's worker thread is running
      */
+    @Override
     public boolean isRunning() {
         running = worker.isAlive();
         return running;
@@ -119,21 +124,23 @@ public class GamepadObserver implements Runnable {
     /**
      * Adds an event listener to the observer's list of event listeners
      *
-     * @param listener GamepadListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
-     * @param identifier Controller component identifier to specify which component update notification needs to update which callback function
+     * @param listener ControllerUpdateListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
+     * @param component Controller component identifier to specify which component update notification needs to update which callback function
      */
-    public void addListener(GamepadListener listener, Identifier identifier) {
-        gamepadListeners.put(identifier, listener);
+    @Override
+    public void addListener(ControllerUpdateListener listener, Identifier component) {
+        gamepadListeners.put(component, listener);
     }
 
     /**
      * Removes an event listener to the observer's list of event listeners
      *
-     * @param listener GamepadListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
-     * @param identifier Controller component identifier to specify which component update notification needs to update which callback function
+     * @param listener ControllerUpdateListener object whose callback method onChange() will be executed on notification of change in the controller component identified by the component identifier
+     * @param component Controller component identifier to specify which component update notification needs to update which callback function
      */
-    public void removeListener(GamepadListener listener, Identifier identifier) {
-        gamepadListeners.remove(identifier, listener);
+    @Override
+    public void removeListener(ControllerUpdateListener listener, Identifier component) {
+        gamepadListeners.remove(component, listener);
     }
 
     /**
@@ -148,9 +155,9 @@ public class GamepadObserver implements Runnable {
                     gamepad.poll();
                     if(queue.getNextEvent(event)) {
                         Component eventComponent = event.getComponent();
-                        for(Map.Entry<Identifier, GamepadListener> entry : gamepadListeners.entrySet()) {
+                        for(Map.Entry<Identifier, ControllerUpdateListener> entry : gamepadListeners.entrySet()) {
                             if(eventComponent.getIdentifier() == entry.getKey()) {
-                                entry.getValue().onChange(entry.getKey(), eventComponent.getPollData());
+                                entry.getValue().onChange(String.valueOf(entry.getKey()), eventComponent.getPollData());
                             }
                         }
                     }

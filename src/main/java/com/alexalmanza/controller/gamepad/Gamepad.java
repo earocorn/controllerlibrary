@@ -1,6 +1,6 @@
 package com.alexalmanza.controller.gamepad;
 
-import com.alexalmanza.model.IController;
+import com.alexalmanza.interfaces.IController;
 
 public class Gamepad implements IController {
 

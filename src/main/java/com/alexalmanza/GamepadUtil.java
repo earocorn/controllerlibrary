@@ -1,8 +1,8 @@
 package com.alexalmanza;
 
 import com.alexalmanza.controller.gamepad.GamepadAxis;
-import com.alexalmanza.model.ControllerDirection;
-import com.alexalmanza.model.Sensitivity;
+import com.alexalmanza.models.ControllerDirection;
+import com.alexalmanza.models.Sensitivity;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 
@@ -29,7 +29,7 @@ public class GamepadUtil {
     /**
      * Map of joystick sensitivities
      */
-    private Map<Component.Identifier, com.alexalmanza.model.Sensitivity> sensitivityMap;
+    private Map<Component.Identifier, com.alexalmanza.models.Sensitivity> sensitivityMap;
     private final String ERR_NOT_CONNECTED = "A gamepad is not connected.";
 
     /**
@@ -317,11 +317,11 @@ public class GamepadUtil {
         if (sensitivityMap == null || sensitivityMap.isEmpty()) {
             return value;
         }
-        com.alexalmanza.model.Sensitivity componentSensitivity = sensitivityMap.get(identifier);
-        if(componentSensitivity == com.alexalmanza.model.Sensitivity.NULL || componentSensitivity == null) {
+        com.alexalmanza.models.Sensitivity componentSensitivity = sensitivityMap.get(identifier);
+        if(componentSensitivity == com.alexalmanza.models.Sensitivity.NULL || componentSensitivity == null) {
             return value;
         }
-        value = (componentSensitivity.ordinal() >= com.alexalmanza.model.Sensitivity.MEDIUM.ordinal ()) ? (float) Math.pow(componentValue, componentSensitivity.getSensitivityModifier()) : componentValue * componentSensitivity.getSensitivityModifier();
+        value = (componentSensitivity.ordinal() >= com.alexalmanza.models.Sensitivity.MEDIUM.ordinal ()) ? (float) Math.pow(componentValue, componentSensitivity.getSensitivityModifier()) : componentValue * componentSensitivity.getSensitivityModifier();
         return (value > componentDeadZone) ? value : componentValue;
     }
 
@@ -331,7 +331,7 @@ public class GamepadUtil {
      * @param axis  Identifies axis component
      * @param sensitivity Sensitivity value
      */
-    public void setSensitivity(GamepadAxis axis, com.alexalmanza.model.Sensitivity sensitivity) {
+    public void setSensitivity(GamepadAxis axis, com.alexalmanza.models.Sensitivity sensitivity) {
         //TODO: assert only joystick sensitivity to be set
         if (sensitivityMap == null) {
             throw new NullPointerException("Sensitivity hashmap is null");
