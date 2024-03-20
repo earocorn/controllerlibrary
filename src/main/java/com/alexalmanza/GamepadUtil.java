@@ -1,7 +1,7 @@
 package com.alexalmanza;
 
-import com.alexalmanza.model.GamepadAxis;
-import com.alexalmanza.model.GamepadDirection;
+import com.alexalmanza.gamepad.GamepadAxis;
+import com.alexalmanza.model.ControllerDirection;
 import com.alexalmanza.model.Sensitivity;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
@@ -56,11 +56,15 @@ public class GamepadUtil {
      *
      * @return current gamepad
      */
-    public Controller getGamepad() {
+    public Controller getDefaultGamepad() {
         if(gamepad == null) {
             throw new NullPointerException("Gamepad is null.");
         }
         return gamepad;
+    }
+
+    public Controller[] getAllGamepads() {
+        return GamepadInit.getInstance().getAllGamepads();
     }
 
     /**
@@ -375,10 +379,10 @@ public class GamepadUtil {
      *
      * @param xComponent X Axis Component. Axis.X or Axis.RX
      * @param yComponent Y Axis Component. Axis.Y or Axis.RY
-     * @return GamepadDirection component for human readable direction component.
+     * @return ControllerDirection component for human readable direction component.
      */
-    private GamepadDirection getAxisDirection(Component xComponent, Component yComponent) {
-        com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
+    private ControllerDirection getAxisDirection(Component xComponent, Component yComponent) {
+        ControllerDirection controllerDirection = ControllerDirection.NULL;
         float xValue = xComponent.getPollData();
         float yValue = yComponent.getPollData();
 
@@ -386,42 +390,42 @@ public class GamepadUtil {
         if(xValue > 0.0f) {
             // 1.0 > X > 0.0 AND 1.0 > Y > 0.0
             if(yValue > 0.0f) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_RIGHT;
+                controllerDirection = ControllerDirection.DOWN_RIGHT;
             }
             // 1.0 > X > 0.0 AND -1.0 < Y < 0.0
             else if(yValue < 0.0f) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_RIGHT;
+                controllerDirection = ControllerDirection.UP_RIGHT;
             }
         }
         // -1.0 < X < 0.0
         else {
             // -1.0 < X < 0.0 AND -1.0 > Y < 0.0
             if(yValue > 0.0f) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_LEFT;
+                controllerDirection = ControllerDirection.DOWN_LEFT;
             }
             // -1.0 < X < 0.0 AND 1.0 > Y > 0.0
             else if(yValue < 0.0f) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_LEFT;
+                controllerDirection = ControllerDirection.UP_LEFT;
             }
         }
 
         if(xValue == 1.0 && isInInitialAxisRange(yValue)) {
-            gamepadDirection = com.alexalmanza.model.GamepadDirection.RIGHT;
+            controllerDirection = ControllerDirection.RIGHT;
         } else if (xValue == -1.0 && isInInitialAxisRange(yValue)) {
-            gamepadDirection = com.alexalmanza.model.GamepadDirection.LEFT;
+            controllerDirection = ControllerDirection.LEFT;
         } else if(isInInitialAxisRange(xValue)) {
             if(yValue == 1.0) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN;
+                controllerDirection = ControllerDirection.DOWN;
             } else if (yValue == -1.0) {
-                gamepadDirection = com.alexalmanza.model.GamepadDirection.UP;
+                controllerDirection = ControllerDirection.UP;
             }
         }
 
         if(isInInitialAxisRange(xValue) && isInInitialAxisRange(yValue)) {
-            gamepadDirection = GamepadDirection.NULL;
+            controllerDirection = ControllerDirection.NULL;
         }
 
-        return gamepadDirection;
+        return controllerDirection;
     }
 
     /**
@@ -455,25 +459,25 @@ public class GamepadUtil {
      * Retrieve human-readable direction component for any Axis component.
      *
      * @param axis Axis Component, LEFT_JOYSTICK, RIGHT_JOYSTICK, or D_PAD
-     * @return Directional component given by enum GamepadDirection
+     * @return Directional component given by enum ControllerDirection
      */
-    public com.alexalmanza.model.GamepadDirection getDirection(GamepadAxis axis) {
+    public ControllerDirection getDirection(GamepadAxis axis) {
         if (!isConnected()) {
             throw new IllegalStateException(ERR_NOT_CONNECTED);
         }
-        com.alexalmanza.model.GamepadDirection gamepadDirection = com.alexalmanza.model.GamepadDirection.NULL;
+        ControllerDirection controllerDirection = ControllerDirection.NULL;
         switch (axis) {
             case LEFT_JOYSTICK:
                 if (!hasComponent(Component.Identifier.Axis.X) || !hasComponent(Component.Identifier.Axis.Y)) {
                     throw new NullPointerException("Left joystick not found");
                 }
-                gamepadDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.X), gamepad.getComponent(Component.Identifier.Axis.Y));
+                controllerDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.X), gamepad.getComponent(Component.Identifier.Axis.Y));
                 break;
             case RIGHT_JOYSTICK:
                 if (!hasComponent(Component.Identifier.Axis.RX) || !hasComponent(Component.Identifier.Axis.RY)) {
                     throw new NullPointerException("Right joystick not found");
                 }
-                gamepadDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.RX), gamepad.getComponent(Component.Identifier.Axis.RY));
+                controllerDirection = getAxisDirection(gamepad.getComponent(Component.Identifier.Axis.RX), gamepad.getComponent(Component.Identifier.Axis.RY));
                 break;
             case D_PAD:
                 if (!hasComponent(Component.Identifier.Axis.POV)) {
@@ -481,25 +485,25 @@ public class GamepadUtil {
                 }
                 float dpadVal = getComponentValue(Component.Identifier.Axis.POV);
                 if (dpadVal == 0.125f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_LEFT;
+                    controllerDirection = ControllerDirection.UP_LEFT;
                 } else if (dpadVal == 0.25f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP;
+                    controllerDirection = ControllerDirection.UP;
                 } else if (dpadVal == 0.375f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.UP_RIGHT;
+                    controllerDirection = ControllerDirection.UP_RIGHT;
                 } else if (dpadVal == 0.5f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.RIGHT;
+                    controllerDirection = ControllerDirection.RIGHT;
                 } else if (dpadVal == 0.625f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_RIGHT;
+                    controllerDirection = ControllerDirection.DOWN_RIGHT;
                 } else if (dpadVal == 0.75f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN;
+                    controllerDirection = ControllerDirection.DOWN;
                 } else if (dpadVal == 0.875f) {
-                    gamepadDirection = com.alexalmanza.model.GamepadDirection.DOWN_LEFT;
+                    controllerDirection = ControllerDirection.DOWN_LEFT;
                 } else if (dpadVal == 1.0f) {
-                    gamepadDirection = GamepadDirection.LEFT;
+                    controllerDirection = ControllerDirection.LEFT;
                 }
                 break;
         }
-        return gamepadDirection;
+        return controllerDirection;
     }
 
 }

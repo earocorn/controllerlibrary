@@ -50,7 +50,7 @@ public class GamepadObserver implements Runnable {
      * Singleton constructor
      */
     private GamepadObserver() {
-        gamepad = GamepadInit.getInstance().getGamepad();
+        gamepad = GamepadInit.getInstance().getDefaultGamepad();
         gamepadListeners = new ConcurrentHashMap<>();
     }
 

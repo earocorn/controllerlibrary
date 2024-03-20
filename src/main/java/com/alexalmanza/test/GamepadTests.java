@@ -1,8 +1,7 @@
 package com.alexalmanza.test;
 
-import com.alexalmanza.GamepadInit;
 import com.alexalmanza.GamepadUtil;;
-import com.alexalmanza.model.GamepadAxis;
+import com.alexalmanza.gamepad.GamepadAxis;
 import com.alexalmanza.model.Sensitivity;
 import com.alexalmanza.observer.GamepadListener;
 import com.alexalmanza.observer.GamepadObserver;
@@ -45,12 +44,12 @@ public class GamepadTests {
 
     @Test
     void controllerExists() {
-        Assertions.assertInstanceOf(Controller.class, gamepadUtil.getGamepad());
+        Assertions.assertInstanceOf(Controller.class, gamepadUtil.getDefaultGamepad());
     }
 
     @Test
     void controllerIsGamepad() {
-        Assertions.assertEquals(Controller.Type.GAMEPAD, gamepadUtil.getGamepad().getType());
+        Assertions.assertEquals(Controller.Type.GAMEPAD, gamepadUtil.getDefaultGamepad().getType());
     }
 
     @Test

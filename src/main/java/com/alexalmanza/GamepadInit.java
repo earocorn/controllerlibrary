@@ -9,9 +9,9 @@ import net.java.games.input.ControllerEnvironment;
 public class GamepadInit {
 
     /**
-     * Globally-used gamepad controller
+     * Globally-used default gamepad controller
      */
-    private Controller gamepad;
+    private Controller defaultGamepad;
 
     /**
      * Instance of GamepadInit for singleton
@@ -19,14 +19,21 @@ public class GamepadInit {
     private static GamepadInit instance = null;
 
     /**
+     * List of all connected gamepad controllers
+     */
+    private Controller[] gamepads;
+
+    /**
      * Singleton constructor
      */
     private GamepadInit() {
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
 
+        gamepads = controllers;
+
         for (Controller controller : controllers) {
             if (controller.getType() == Controller.Type.GAMEPAD) {
-                gamepad = controller;
+                defaultGamepad = controller;
             }
         }
     }
@@ -48,11 +55,18 @@ public class GamepadInit {
      *
      * @return Current gamepad
      */
-    public Controller getGamepad() {
-        if(gamepad == null) {
+    public Controller getDefaultGamepad() {
+        if(defaultGamepad == null) {
             throw new NullPointerException("Gamepad has not been initialized.");
         }
-        return gamepad;
+        return defaultGamepad;
+    }
+
+    public Controller[] getAllGamepads() {
+        if(gamepads == null) {
+            throw new NullPointerException("There are no connected gamepad controllers.");
+        }
+        return gamepads;
     }
 
 }
