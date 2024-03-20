@@ -1,4 +1,4 @@
-package com.alexalmanza.gamepad;
+package com.alexalmanza.controller.gamepad;
 
 public enum GamepadAxis {
 

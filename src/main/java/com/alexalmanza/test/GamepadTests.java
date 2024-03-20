@@ -1,7 +1,7 @@
 package com.alexalmanza.test;
 
 import com.alexalmanza.GamepadUtil;;
-import com.alexalmanza.gamepad.GamepadAxis;
+import com.alexalmanza.controller.gamepad.GamepadAxis;
 import com.alexalmanza.model.Sensitivity;
 import com.alexalmanza.observer.GamepadListener;
 import com.alexalmanza.observer.GamepadObserver;

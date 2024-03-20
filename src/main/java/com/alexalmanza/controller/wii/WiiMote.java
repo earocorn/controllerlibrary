@@ -1,4 +1,4 @@
-package com.alexalmanza.wii;
+package com.alexalmanza.controller.wii;
 
 import com.alexalmanza.model.IController;
 

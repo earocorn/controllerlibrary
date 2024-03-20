@@ -1,6 +1,6 @@
 package com.alexalmanza;
 
-import com.alexalmanza.gamepad.GamepadAxis;
+import com.alexalmanza.controller.gamepad.GamepadAxis;
 import com.alexalmanza.model.ControllerDirection;
 import com.alexalmanza.model.Sensitivity;
 import net.java.games.input.Component;
