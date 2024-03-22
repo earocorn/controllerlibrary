@@ -10,6 +10,10 @@ public class WiiObserver implements IObserver {
 
     private ConcurrentHashMap<Component.Identifier, ControllerUpdateListener> wiiListeners;
 
+    private WiiObserver() {
+
+    }
+
     @Override
     public void addListener(ControllerUpdateListener listener, Component.Identifier component) {
         wiiListeners.put(component, listener);
