@@ -2,7 +2,7 @@ package com.alexalmanza.controller.gamepad.observer;
 
 import com.alexalmanza.GamepadInit;
 import com.alexalmanza.interfaces.IObserver;
-import com.alexalmanza.models.ControllerUpdateListener;
+import com.alexalmanza.interfaces.ControllerUpdateListener;
 import net.java.games.input.*;
 import net.java.games.input.Component.Identifier;
 

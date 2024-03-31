@@ -1,4 +1,4 @@
-package com.alexalmanza.models;
+package com.alexalmanza.interfaces;
 
 /**
  * Listener interface used with GamepadObserver to perform callbacks

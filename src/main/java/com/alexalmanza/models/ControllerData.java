@@ -4,9 +4,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ControllerData {
 
-    private ConcurrentHashMap<String, Float> controllerData;
-
-    public ConcurrentHashMap<String, Float> getControllerData() {
-        return controllerData;
+    public ControllerData(String name, ConcurrentHashMap<String, Float> outputs) {
+        this.name = name;
+        this.outputs = outputs;
     }
+
+    private String name;
+
+    private ConcurrentHashMap<String, Float> outputs;
+
+    public String getName() {
+        return name;
+    }
+
+    public ConcurrentHashMap<String, Float> getOutputs() {
+        return outputs;
+    }
+
 }

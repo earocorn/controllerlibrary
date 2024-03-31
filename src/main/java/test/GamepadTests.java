@@ -1,9 +1,9 @@
-package com.alexalmanza.test;
+package test;
 
 import com.alexalmanza.GamepadUtil;;
 import com.alexalmanza.controller.gamepad.GamepadAxis;
 import com.alexalmanza.models.Sensitivity;
-import com.alexalmanza.models.ControllerUpdateListener;
+import com.alexalmanza.interfaces.ControllerUpdateListener;
 import com.alexalmanza.controller.gamepad.observer.GamepadObserver;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;

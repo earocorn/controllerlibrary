@@ -7,7 +7,6 @@ public interface IController {
     void connect();
     void disconnect();
     void registerObserver(IObserver observer);
-    void
-    ControllerData controllerData = null;
+    ControllerData getControllerData();
 
 }

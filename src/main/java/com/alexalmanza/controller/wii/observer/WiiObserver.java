@@ -1,7 +1,7 @@
 package com.alexalmanza.controller.wii.observer;
 
 import com.alexalmanza.interfaces.IObserver;
-import com.alexalmanza.models.ControllerUpdateListener;
+import com.alexalmanza.interfaces.ControllerUpdateListener;
 import net.java.games.input.Component;
 
 import java.util.concurrent.ConcurrentHashMap;

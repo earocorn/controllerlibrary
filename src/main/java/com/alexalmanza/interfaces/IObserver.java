@@ -1,6 +1,5 @@
 package com.alexalmanza.interfaces;
 
-import com.alexalmanza.models.ControllerUpdateListener;
 import net.java.games.input.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
