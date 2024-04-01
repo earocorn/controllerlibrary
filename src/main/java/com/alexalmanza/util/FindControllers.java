@@ -13,6 +13,8 @@ public class FindControllers {
     // TODO: Search for wii mote or usb controllers
     private ArrayList<IController> controllers;
     public FindControllers(Event event) {
+        controllers = new ArrayList<>();
+
         try {
             GamepadConnection gamepadConnection = new GamepadConnection(event);
             if(gamepadConnection.getConnectedControllers() != null && !gamepadConnection.getConnectedControllers().isEmpty()) {
