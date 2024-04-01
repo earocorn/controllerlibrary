@@ -6,10 +6,7 @@ import com.alexalmanza.interfaces.IController;
 import com.alexalmanza.models.ControllerType;
 import net.java.games.input.Event;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 public class FindControllers {
 
@@ -18,10 +15,14 @@ public class FindControllers {
     public FindControllers(Event event) {
         try {
             GamepadConnection gamepadConnection = new GamepadConnection(event);
-            controllers.addAll((Collection<? extends IController>) Arrays.asList(gamepadConnection.getConnectedControllers()));
+            if(gamepadConnection.getConnectedControllers() != null && !gamepadConnection.getConnectedControllers().isEmpty()) {
+                controllers.addAll(gamepadConnection.getConnectedControllers());
+            }
 
             WiiMoteConnection wiiMoteConnection = new WiiMoteConnection();
-            controllers.addAll((Collection<? extends IController>) Arrays.asList(wiiMoteConnection.getConnectedControllers()));
+            if(wiiMoteConnection.getConnectedControllers() != null && !wiiMoteConnection.getConnectedControllers().isEmpty()) {
+                controllers.addAll(wiiMoteConnection.getConnectedControllers());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

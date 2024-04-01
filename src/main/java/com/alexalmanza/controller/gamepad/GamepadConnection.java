@@ -7,15 +7,21 @@ import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GamepadConnection implements IControllerConnection {
 
     ArrayList<IController> connectedControllers;
 
     public GamepadConnection(Event event) {
+        System.setProperty("net.java.games.input.useDefaultPlugin", "false");
+
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        ArrayList<Controller> gamepadControllers = (ArrayList<Controller>) Arrays.stream(controllers).filter((controller) -> controller.getType() == Controller.Type.GAMEPAD);
+        ArrayList<Controller> gamepadControllers = new ArrayList<>();
+        for (Controller controller : controllers) {
+            if(controller.getType() == Controller.Type.GAMEPAD) {
+                gamepadControllers.add(controller);
+            }
+        }
         if(gamepadControllers.isEmpty()) {
             throw new IllegalStateException("No HID Gamepad controllers connected.");
         }

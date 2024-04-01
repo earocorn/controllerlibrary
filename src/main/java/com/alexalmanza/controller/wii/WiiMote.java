@@ -25,11 +25,6 @@ public class WiiMote implements IController {
     }
 
     @Override
-    public void setObserver(IObserver observer) {
-
-    }
-
-    @Override
     public IObserver getObserver() {
         return null;
     }
