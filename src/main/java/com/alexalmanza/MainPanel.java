@@ -17,6 +17,7 @@ public class MainPanel extends JPanel implements ActionListener {
     Gamepad gamepad;
 
     public MainPanel() {
+        gamepad = Main.gamepad;
         timer = new Timer(100, this);
 
         setSize(Util.windowDimension);
