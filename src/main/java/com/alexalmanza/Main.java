@@ -2,11 +2,13 @@ package com.alexalmanza;
 
 import com.alexalmanza.controller.gamepad.Gamepad;
 import com.alexalmanza.interfaces.IController;
+import com.alexalmanza.models.ControllerType;
 import com.alexalmanza.util.FindControllers;
 import net.java.games.input.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -14,6 +16,7 @@ public class Main {
     public static Gamepad gamepad;
 
     public static void main(String[] args) {
+        //System.setProperty("net.java.games.input.useDefaultPlugin", "false");
         Event event = new Event();
 
         findControllers = new FindControllers(event);
@@ -29,7 +32,7 @@ public class Main {
             }
         }
 
-        ArrayList<IController> controllerArrayList = findControllers.getControllers();
+        List<IController> controllerArrayList = findControllers.getControllers();
 
         for (IController controller : controllerArrayList) {
             System.out.println(controller.getControllerData().getName());
