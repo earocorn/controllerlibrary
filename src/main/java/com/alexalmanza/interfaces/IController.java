@@ -4,9 +4,9 @@ import com.alexalmanza.models.ControllerData;
 
 public interface IController {
 
-    void connect();
+    boolean isConnected();
     void disconnect();
-    void registerObserver(IObserver observer);
+    IObserver getObserver();
     ControllerData getControllerData();
 
 }

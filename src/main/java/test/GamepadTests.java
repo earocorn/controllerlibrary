@@ -25,8 +25,6 @@ public class GamepadTests {
             e.printStackTrace();
         }
 
-        observer = GamepadObserver.getInstance();
-        observer.setEvent(event);
         ControllerUpdateListener testListener = (identifier, currentValue) -> System.out.println(identifier + " : " + currentValue);
         observer.addListener(testListener, Component.Identifier.Button._0);
         observer.doStart();

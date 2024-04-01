@@ -1,6 +1,7 @@
 package com.alexalmanza.controller.gamepad.observer;
 
 import com.alexalmanza.GamepadInit;
+import com.alexalmanza.controller.gamepad.Gamepad;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.interfaces.ControllerUpdateListener;
 import net.java.games.input.*;
@@ -27,12 +28,9 @@ public class GamepadObserver implements IObserver {
     /**
      * The controller to which the observer is applied
      */
-    private static Controller gamepad;
+    private Controller gamepad;
 
-    /**
-     * Instance of observer for singleton
-     */
-    private static GamepadObserver gamepadObserver;
+    private Gamepad parent;
 
     /**
      * Lock for thread safety
@@ -51,36 +49,11 @@ public class GamepadObserver implements IObserver {
     /**
      * Singleton constructor
      */
-    private GamepadObserver() {
-        gamepad = GamepadInit.getInstance().getDefaultGamepad();
-        gamepadListeners = new ConcurrentHashMap<>();
-    }
-
-    /**
-     * Set Event object for library
-     *
-     * @param event Instance of Event to use with library
-     */
-    public void setEvent(Event event) {
+    public GamepadObserver(Gamepad parent, Controller gamepad, Event event) {
         this.event = event;
-    }
-
-    /**
-     * Get instance of singleton class. NOTE: Need to set event using setEvent() of a new instance of an Event object
-     *
-     * @return Current instance of GamepadObserver
-     */
-    public static GamepadObserver getInstance() {
-        GamepadObserver result = gamepadObserver;
-        if(result == null) {
-            synchronized (lock) {
-                result = gamepadObserver;
-                if(result == null) {
-                    gamepadObserver = result = new GamepadObserver();
-                }
-            }
-        }
-        return result;
+        this.parent = parent;
+        this.gamepad = gamepad;
+        gamepadListeners = new ConcurrentHashMap<>();
     }
 
     /**
@@ -153,6 +126,11 @@ public class GamepadObserver implements IObserver {
                 synchronized (this) {
                     EventQueue queue = gamepad.getEventQueue();
                     gamepad.poll();
+
+                    for(Component component : gamepad.getComponents()) {
+                        parent.getControllerData().getOutputs().put(component.getIdentifier().getName(), component.getPollData());
+                    }
+
                     if(queue.getNextEvent(event)) {
                         Component eventComponent = event.getComponent();
                         for(Map.Entry<Identifier, ControllerUpdateListener> entry : gamepadListeners.entrySet()) {
