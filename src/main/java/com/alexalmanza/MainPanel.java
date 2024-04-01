@@ -1,5 +1,7 @@
 package com.alexalmanza;
 
+import com.alexalmanza.controller.gamepad.Gamepad;
+import com.alexalmanza.models.ControllerData;
 import net.java.games.input.Component;
 import net.java.games.input.EventQueue;
 import javax.swing.JPanel;
@@ -7,12 +9,12 @@ import javax.swing.Timer;
 import java.awt.Graphics;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 public class MainPanel extends JPanel implements ActionListener {
 
     Timer timer;
-
-    GamepadUtil gamepadUtil = Main.gamepadUtil;
+    Gamepad gamepad;
 
     public MainPanel() {
         timer = new Timer(100, this);
@@ -27,16 +29,17 @@ public class MainPanel extends JPanel implements ActionListener {
         super.paint(g);
         g.drawString("hello !!!" , 200, 200);
 
-        for(int i = 0; i < gamepadUtil.getGamepadComponents().length; i++) {
-            Component comp = gamepadUtil.getGamepadComponents()[i];
-            // stream data from controller
-            g.drawString(comp.getIdentifier() + " : " + gamepadUtil.getComponentValue(comp.getIdentifier()), getWidth()/2, ((getHeight()/gamepadUtil.getGamepadComponents().length)*i) + 20);
+        ControllerData data = gamepad.getControllerData();
+
+        int i = 0;
+        for (Map.Entry entry : data.getOutputs().entrySet()) {
+            g.drawString(entry.getKey().toString() + " : " + entry.getValue(),getWidth()/2, ((getHeight()/data.getOutputs().size())*i++) + 20);
         }
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        gamepadUtil.pollGamepad();
     }
 }

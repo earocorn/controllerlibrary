@@ -1,19 +1,23 @@
 package com.alexalmanza;
 
-import com.alexalmanza.observer.GamepadObserver;
+import com.alexalmanza.controller.gamepad.Gamepad;
+import com.alexalmanza.interfaces.IController;
+import com.alexalmanza.util.FindControllers;
 import net.java.games.input.*;
 
 import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class Main {
-    public static Component[] gamepadComponents = null;
-    public static Controller gamepad = null;
-    public static GamepadUtil gamepadUtil;
+
+    public static FindControllers findControllers;
+    public static Gamepad gamepad;
 
     public static void main(String[] args) {
         Event event = new Event();
+
+        findControllers = new FindControllers(event);
+
         File folder = new File(System.getProperty("java.library.path"));
         File[] listOfFiles = folder.listFiles();
         System.out.println(System.getProperty("java.library.path"));
@@ -24,15 +28,16 @@ public class Main {
                 System.out.println(file.getName());
             }
         }
-        gamepadUtil = new GamepadUtil();
-        /* Get the available controllers */
-        GamepadObserver gamepadObserver = GamepadObserver.getInstance();
 
-        gamepadObserver.setEvent(event);
+        ArrayList<IController> controllerArrayList = findControllers.getControllers();
 
-        gamepadObserver.doStart();
+        for (IController controller : controllerArrayList) {
+            System.out.println(controller.getControllerData().getName());
+        }
 
-        gamepadObserver.addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
+        gamepad = (Gamepad) controllerArrayList.get(0);
+
+        gamepad.getObserver().addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
 
         new MainFrame();
 
