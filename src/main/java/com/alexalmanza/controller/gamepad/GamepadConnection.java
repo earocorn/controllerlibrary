@@ -13,7 +13,7 @@ public class GamepadConnection implements IControllerConnection {
     ArrayList<IController> connectedControllers;
 
     public GamepadConnection(Event event) {
-        System.setProperty("net.java.games.input.useDefaultPlugin", "false");
+        //System.setProperty("net.java.games.input.useDefaultPlugin", "false");
 
         Controller[] controllers = ControllerEnvironment.getDefaultEnvironment().getControllers();
         ArrayList<Controller> gamepadControllers = new ArrayList<>();
@@ -23,8 +23,10 @@ public class GamepadConnection implements IControllerConnection {
             }
         }
         if(gamepadControllers.isEmpty()) {
+            connectedControllers = null;
             throw new IllegalStateException("No HID Gamepad controllers connected.");
         }
+        connectedControllers = new ArrayList<>();
         for (Controller controller : gamepadControllers) {
             Gamepad gamepad = new Gamepad(controller, event);
             connectedControllers.add(gamepad);

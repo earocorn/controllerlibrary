@@ -4,6 +4,7 @@ import com.alexalmanza.controller.gamepad.observer.GamepadObserver;
 import com.alexalmanza.interfaces.IController;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.models.ControllerData;
+import com.alexalmanza.models.ControllerType;
 import net.java.games.input.Controller;
 import net.java.games.input.Event;
 
@@ -13,10 +14,12 @@ public class Gamepad implements IController {
 
     private Controller jinputGamepad;
     private GamepadObserver gamepadObserver;
+    private ControllerData controllerData;
 
     public Gamepad(Controller jinputGamepad, Event event) {
         this.jinputGamepad = jinputGamepad;
-        GamepadObserver gamepadObserver = new GamepadObserver(this, jinputGamepad, event);
+        controllerData = new ControllerData(jinputGamepad.getName(), ControllerType.GAMEPAD);
+        gamepadObserver = new GamepadObserver(this, jinputGamepad, event);
         gamepadObserver.doStart();
     }
 
@@ -37,6 +40,6 @@ public class Gamepad implements IController {
 
     @Override
     public ControllerData getControllerData() {
-        return null;
+        return controllerData;
     }
 }

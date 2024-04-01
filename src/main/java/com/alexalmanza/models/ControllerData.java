@@ -4,9 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ControllerData {
 
-    public ControllerData(String controllerName, ConcurrentHashMap<String, Float> outputs, ControllerType controllerType) {
+    public ControllerData(String controllerName, ControllerType controllerType) {
         this.name = controllerName;
-        this.outputs = outputs;
+        this.outputs = new ConcurrentHashMap<>();
         this.controllerType = controllerType;
     }
 
