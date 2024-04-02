@@ -19,21 +19,25 @@ public class WiiMoteConnection implements IControllerConnection {
             @Override
             public void moteFound(Mote mote) {
                 mote.rumble(20001);
+                System.out.println("WiiMote found!");
                 motes.add(mote);
             }
 
         };
-        MoteFinder finder = MoteFinder.getMoteFinder();
-        finder.addMoteFinderListener(listener);
+            MoteFinder finder = MoteFinder.getMoteFinder();
+            finder.addMoteFinderListener(listener);
 
-        try{
-            System.out.println("Starting Wii discovery");
-            finder.startDiscovery();
-            Thread.sleep(300001);
-            finder.stopDiscovery();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            try{
+                System.out.println("Starting Wii discovery");
+                finder.startDiscovery();
+                while(motes.isEmpty()) {
+                    Thread.sleep(1000);
+                    System.out.println("Searching...");
+                }
+                finder.stopDiscovery();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
     }
     @Override
     public void disconnect() {
