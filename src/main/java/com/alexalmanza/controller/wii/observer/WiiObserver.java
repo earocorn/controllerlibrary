@@ -1,7 +1,9 @@
 package com.alexalmanza.controller.wii.observer;
 
+import com.alexalmanza.controller.wii.WiiMote;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.interfaces.ControllerUpdateListener;
+import motej.Mote;
 import net.java.games.input.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,8 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WiiObserver implements IObserver {
 
     private ConcurrentHashMap<Component.Identifier, ControllerUpdateListener> wiiListeners;
+    private WiiMote parent;
+    private Mote mote;
+    private static final Object lock = new Object();
+    private Thread worker;
+    private final String threadName = "WiiObserverThread";
 
-    private WiiObserver() {
+    public WiiObserver(WiiMote parent, Mote mote) {
 
     }
 
@@ -26,7 +33,11 @@ public class WiiObserver implements IObserver {
 
     @Override
     public void doStart() {
-
+        try{
+            if(mote == null) {
+                throw new IllegalStateException("WiiMote is not initialized.");
+            }
+        }
     }
 
     @Override

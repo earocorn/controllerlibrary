@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class WiiMoteConnection implements IControllerConnection {
 
     private ArrayList<Mote> motes;
+    private ArrayList<WiiMote> connectedControllers;
 
     public WiiMoteConnection() {
 
@@ -34,10 +35,22 @@ public class WiiMoteConnection implements IControllerConnection {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        if(motes.isEmpty()) {
+            connectedControllers = null;
+            throw new IllegalStateException("No connected WiiMotes.");
+        }
+
+        for(Mote mote : motes) {
+            WiiMote connectedMote = new WiiMote(mote);
+            connectedControllers.add(connectedMote);
+        }
     }
     @Override
     public void disconnect() {
-
+        for (Mote mote : motes) {
+            mote.disconnect();
+        }
     }
 
     @Override
