@@ -3,12 +3,14 @@ package com.alexalmanza.controller.wii;
 import com.alexalmanza.interfaces.IController;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.models.ControllerData;
+import motej.Mote;
+import motej.MoteFinderListener;
 
 public class WiiMote implements IController {
 
     public WiiMote() {
         try {
-            // TODO: connect to wiimote
+
         } catch (Exception e) {
             e.printStackTrace();
         }

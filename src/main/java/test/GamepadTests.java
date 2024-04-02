@@ -4,6 +4,7 @@ import com.alexalmanza.GamepadUtil;;
 import com.alexalmanza.controller.gamepad.Gamepad;
 import com.alexalmanza.controller.gamepad.GamepadAxis;
 import com.alexalmanza.controller.gamepad.GamepadConnection;
+import com.alexalmanza.controller.wii.WiiMoteConnection;
 import com.alexalmanza.interfaces.IController;
 import com.alexalmanza.models.Sensitivity;
 import com.alexalmanza.interfaces.ControllerUpdateListener;
@@ -41,6 +42,11 @@ public class GamepadTests {
 
         gamepad.getObserver().addListener((identifier, currentValue) -> System.out.println(identifier + " changing to value " + currentValue), Component.Identifier.Button._4);
 
+    }
+
+    @Test
+    void wiiConnection() {
+        WiiMoteConnection wiiMoteConnection = new WiiMoteConnection();
     }
 
 }
