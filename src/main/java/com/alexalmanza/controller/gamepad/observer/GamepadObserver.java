@@ -42,7 +42,7 @@ public class GamepadObserver implements IObserver {
      */
     private Thread worker;
 
-    private final String threadName = "GamepadObserverThread";
+    private String threadName = "GamepadObserverThread:";
 
     private boolean running = false;
 
@@ -53,6 +53,9 @@ public class GamepadObserver implements IObserver {
         this.event = event;
         this.parent = parent;
         this.gamepad = gamepad;
+
+        threadName += parent.getControllerData().getName();
+
         gamepadListeners = new ConcurrentHashMap<>();
     }
 

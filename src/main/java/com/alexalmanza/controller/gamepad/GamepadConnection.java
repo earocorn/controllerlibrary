@@ -28,7 +28,7 @@ public class GamepadConnection implements IControllerConnection {
         }
         connectedControllers = new ArrayList<>();
         for (Controller controller : gamepadControllers) {
-            Gamepad gamepad = new Gamepad(controller, event);
+            Gamepad gamepad = new Gamepad(controller, event, gamepadControllers.indexOf(controller));
             connectedControllers.add(gamepad);
         }
     }

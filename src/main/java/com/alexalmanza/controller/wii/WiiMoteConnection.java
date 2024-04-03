@@ -16,14 +16,10 @@ public class WiiMoteConnection implements IControllerConnection {
     public WiiMoteConnection() {
 
         motes = new ArrayList<>();
-        MoteFinderListener listener = new MoteFinderListener() {
-            @Override
-            public void moteFound(Mote mote) {
-                mote.rumble(20001);
-                System.out.println("WiiMote found!");
-                motes.add(mote);
-            }
-
+        MoteFinderListener listener = mote -> {
+            mote.rumble(20001);
+            System.out.println("WiiMote found!");
+            motes.add(mote);
         };
             MoteFinder finder = MoteFinder.getMoteFinder();
             finder.addMoteFinderListener(listener);
@@ -46,7 +42,7 @@ public class WiiMoteConnection implements IControllerConnection {
         }
 
         for(Mote mote : motes) {
-            WiiMote connectedMote = new WiiMote(mote);
+            WiiMote connectedMote = new WiiMote(mote, motes.indexOf(mote));
             connectedControllers.add(connectedMote);
         }
     }

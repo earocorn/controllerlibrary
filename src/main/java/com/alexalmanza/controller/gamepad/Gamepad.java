@@ -16,9 +16,9 @@ public class Gamepad implements IController {
     private GamepadObserver gamepadObserver;
     private ControllerData controllerData;
 
-    public Gamepad(Controller jinputGamepad, Event event) {
+    public Gamepad(Controller jinputGamepad, Event event, int id) {
         this.jinputGamepad = jinputGamepad;
-        controllerData = new ControllerData(jinputGamepad.getName(), ControllerType.GAMEPAD);
+        controllerData = new ControllerData(jinputGamepad.getName() + ":" + id, ControllerType.GAMEPAD);
         gamepadObserver = new GamepadObserver(this, jinputGamepad, event);
         gamepadObserver.doStart();
     }
