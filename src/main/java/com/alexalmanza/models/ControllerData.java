@@ -1,28 +1,30 @@
 package com.alexalmanza.models;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
 
 public class ControllerData {
 
-    public ControllerData(String controllerName, ControllerType controllerType) {
+    public ControllerData(String controllerName, ControllerType controllerType, ArrayList<ControllerComponent> components) {
         this.name = controllerName;
-        this.outputs = new ConcurrentHashMap<>();
+        this.outputs = components;
         this.controllerType = controllerType;
     }
 
     private String name;
 
-    private ConcurrentHashMap<String, Float> outputs;
+    private ArrayList<ControllerComponent> outputs;
     private ControllerType controllerType;
 
     public String getName() {
         return name;
     }
 
-    public ConcurrentHashMap<String, Float> getOutputs() {
+    public ArrayList<ControllerComponent> getOutputs() {
         return outputs;
     }
     public ControllerType getControllerType() { return controllerType; }
-    public float getValue(String identifier) { return outputs.get(identifier); }
+    public float getValue(String name) {
+        return outputs.stream().filter((x) -> x.getName().equals(name)).findFirst().get().getValue();
+    }
 
 }

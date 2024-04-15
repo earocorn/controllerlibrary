@@ -1,13 +1,15 @@
 package com.alexalmanza.controller.wii;
 
+import com.alexalmanza.controller.wii.identifiers.WiiIdentifier;
 import com.alexalmanza.controller.wii.observer.WiiObserver;
 import com.alexalmanza.interfaces.IController;
 import com.alexalmanza.interfaces.IObserver;
+import com.alexalmanza.models.ControllerComponent;
 import com.alexalmanza.models.ControllerData;
 import com.alexalmanza.models.ControllerType;
 import motej.Mote;
-import motej.MoteFinder;
-import motej.MoteFinderListener;
+
+import java.util.ArrayList;
 
 public class WiiMote implements IController {
 
@@ -21,7 +23,21 @@ public class WiiMote implements IController {
 
         mote.addMoteDisconnectedListener(moteDisconnectedEvent -> connected = false);
 
-        controllerData = new ControllerData("WiiMote:" + id, ControllerType.WIIMOTE);
+        ArrayList<ControllerComponent> components = new ArrayList<>();
+        components.add(new ControllerComponent(WiiIdentifier.A.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.B.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.MINUS.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.PLUS.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.HOME.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier._1.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier._2.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.POV.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.NONE.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.X_ACCELERATION.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.Y_ACCELERATION.getName(), 0.0f));
+        components.add(new ControllerComponent(WiiIdentifier.Z_ACCELERATION.getName(), 0.0f));
+
+        controllerData = new ControllerData("WiiMote:" + id, ControllerType.WIIMOTE, components);
         wiiObserver = new WiiObserver(this, mote);
     }
 

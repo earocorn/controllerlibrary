@@ -1,12 +1,12 @@
 package com.alexalmanza.controller.gamepad.observer;
 
-import com.alexalmanza.GamepadInit;
 import com.alexalmanza.controller.gamepad.Gamepad;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.interfaces.ControllerUpdateListener;
 import net.java.games.input.*;
 import net.java.games.input.Component.Identifier;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -130,8 +130,8 @@ public class GamepadObserver implements IObserver {
                     EventQueue queue = gamepad.getEventQueue();
                     gamepad.poll();
 
-                    for(Component component : gamepad.getComponents()) {
-                        parent.getControllerData().getOutputs().put(component.getIdentifier().getName(), component.getPollData());
+                    for (int i = 0; i < gamepad.getComponents().length; i++) {
+                        parent.getControllerData().getOutputs().get(i).setValue(gamepad.getComponents()[i].getPollData());
                     }
 
                     if(queue.getNextEvent(event)) {

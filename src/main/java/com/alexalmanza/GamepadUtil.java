@@ -63,10 +63,6 @@ public class GamepadUtil {
         return gamepad;
     }
 
-    public Controller[] getAllGamepads() {
-        return GamepadInit.getInstance().getAllGamepads();
-    }
-
     /**
      * Check if gamepad is connected.
      *
