@@ -22,6 +22,7 @@ public class WiiMote implements IController {
         this.mote = mote;
 
         mote.addMoteDisconnectedListener(moteDisconnectedEvent -> connected = false);
+        mote.setPlayerLeds(new boolean[]{true, true, true, true});
 
         ArrayList<ControllerComponent> components = new ArrayList<>();
         components.add(new ControllerComponent(WiiIdentifier.A.getName(), 0.0f));
@@ -39,6 +40,7 @@ public class WiiMote implements IController {
 
         controllerData = new ControllerData("WiiMote:" + id, ControllerType.WIIMOTE, components);
         wiiObserver = new WiiObserver(this, mote);
+        wiiObserver.doStart();
     }
 
     @Override
