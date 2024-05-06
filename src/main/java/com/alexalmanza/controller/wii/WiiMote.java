@@ -8,6 +8,7 @@ import com.alexalmanza.models.ControllerComponent;
 import com.alexalmanza.models.ControllerData;
 import com.alexalmanza.models.ControllerType;
 import motej.Mote;
+import net.java.games.input.Component;
 
 import java.util.ArrayList;
 
@@ -27,9 +28,12 @@ public class WiiMote implements IController {
         ArrayList<ControllerComponent> components = new ArrayList<>();
         components.add(new ControllerComponent(WiiIdentifier.A.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.B.getName(), 0.0f));
-        components.add(new ControllerComponent(WiiIdentifier.MINUS.getName(), 0.0f));
-        components.add(new ControllerComponent(WiiIdentifier.PLUS.getName(), 0.0f));
-        components.add(new ControllerComponent(WiiIdentifier.HOME.getName(), 0.0f));
+//        components.add(new ControllerComponent(WiiIdentifier.MINUS.getName(), 0.0f));
+//        components.add(new ControllerComponent(WiiIdentifier.PLUS.getName(), 0.0f));
+//        components.add(new ControllerComponent(WiiIdentifier.HOME.getName(), 0.0f));
+        components.add(new ControllerComponent(Component.Identifier.Button.MODE.getName(), 0.0f));
+        components.add(new ControllerComponent(Component.Identifier.Button.LEFT_THUMB.getName(), 0.0f));
+        components.add(new ControllerComponent(Component.Identifier.Button.RIGHT_THUMB.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier._1.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier._2.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.POV.getName(), 0.0f));

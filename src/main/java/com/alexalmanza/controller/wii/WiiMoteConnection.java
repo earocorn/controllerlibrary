@@ -12,6 +12,8 @@ public class WiiMoteConnection implements IControllerConnection {
 
     private ArrayList<Mote> motes;
     private ArrayList<IController> connectedControllers;
+    private MoteFinder finder;
+    private boolean isSearching = false;
 
     public WiiMoteConnection() {
 
@@ -21,19 +23,22 @@ public class WiiMoteConnection implements IControllerConnection {
             System.out.println("WiiMote found!");
             motes.add(mote);
         };
-            MoteFinder finder = MoteFinder.getMoteFinder();
+            finder = MoteFinder.getMoteFinder();
             finder.addMoteFinderListener(listener);
 
-        try{
+        try {
             System.out.println("Starting Wii discovery");
             finder.startDiscovery();
-            while(motes.isEmpty()) {
+            isSearching = true;
+            while(isSearching) {
+                if(!motes.isEmpty()) { isSearching = false; }
                 Thread.sleep(1000);
                 System.out.println("Searching...");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            isSearching = false;
             finder.stopDiscovery();
         }
 
@@ -49,8 +54,15 @@ public class WiiMoteConnection implements IControllerConnection {
             connectedControllers.add(connectedMote);
         }
     }
+
+    public void cancelSearch() {
+        finder.stopDiscovery();
+    }
+
     @Override
     public void disconnect() {
+        isSearching = false;
+        finder.stopDiscovery();
         for (Mote mote : motes) {
             mote.disconnect();
         }
