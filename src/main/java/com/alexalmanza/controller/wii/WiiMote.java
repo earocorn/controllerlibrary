@@ -31,9 +31,9 @@ public class WiiMote implements IController {
 //        components.add(new ControllerComponent(WiiIdentifier.MINUS.getName(), 0.0f));
 //        components.add(new ControllerComponent(WiiIdentifier.PLUS.getName(), 0.0f));
 //        components.add(new ControllerComponent(WiiIdentifier.HOME.getName(), 0.0f));
-        components.add(new ControllerComponent(Component.Identifier.Button.MODE.getName(), 0.0f));
         components.add(new ControllerComponent(Component.Identifier.Button.LEFT_THUMB.getName(), 0.0f));
         components.add(new ControllerComponent(Component.Identifier.Button.RIGHT_THUMB.getName(), 0.0f));
+        components.add(new ControllerComponent(Component.Identifier.Button.MODE.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier._1.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier._2.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.POV.getName(), 0.0f));
