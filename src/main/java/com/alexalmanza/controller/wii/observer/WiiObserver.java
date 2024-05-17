@@ -100,6 +100,7 @@ public class WiiObserver implements IObserver, ExtensionListener {
     };
 
     private void populateNunchukJoystickOutput(AnalogStickEvent e) {
+        // TODO: here
         // Calculate calibration to match the [-1.0, 1.0] interval of normal controller axes
         // Calibration data example. MaxAnalog = 254, MinAnalog = 254, CenterPoint = 112, 114,
         // Actual x, y axes data: CenterPoint = [124, 123]
@@ -164,7 +165,7 @@ public class WiiObserver implements IObserver, ExtensionListener {
             }
 
             // Read Buttons and Accelerometer data from WiiMote
-            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x32, true);
+            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x31, true);
 
             running = true;
             worker = new Thread(this, this.threadName);
@@ -236,7 +237,7 @@ public class WiiObserver implements IObserver, ExtensionListener {
 
     @Override
     public void extensionDisconnected(ExtensionEvent extensionEvent) {
-        mote.setReportMode(ReportModeRequest.DATA_REPORT_0x30, true);
+        mote.setReportMode(ReportModeRequest.DATA_REPORT_0x31, true);
         for(ControllerComponent nunchukComponent : nunchukComponents) {
             parent.getControllerData().getOutputs().remove(nunchukComponent);
         }
