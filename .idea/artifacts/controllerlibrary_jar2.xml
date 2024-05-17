@@ -12,7 +12,6 @@
       <element id="library" level="project" name="Maven: org.junit.jupiter:junit-jupiter-params:5.10.1" />
       <element id="library" level="project" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.10.1" />
       <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.36" />
-      <element id="library" level="project" name="bluecove-2.1.1" />
       <element id="library" level="project" name="Maven: org.junit.jupiter:junit-jupiter:5.10.1" />
       <element id="library" level="project" name="Maven: org.junit.platform:junit-platform-commons:1.10.1" />
       <element id="library" level="project" name="Maven: org.apiguardian:apiguardian-api:1.1.2" />

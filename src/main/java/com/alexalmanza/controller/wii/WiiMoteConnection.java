@@ -31,7 +31,7 @@ public class WiiMoteConnection implements IControllerConnection {
             finder.startDiscovery();
             isSearching = true;
             while(isSearching) {
-                if(!motes.isEmpty()) { isSearching = false; }
+                //if(!motes.isEmpty()) { isSearching = false; }
                 Thread.sleep(1000);
                 System.out.println("Searching...");
             }

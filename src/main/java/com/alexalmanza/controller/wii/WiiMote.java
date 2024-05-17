@@ -20,6 +20,7 @@ public class WiiMote implements IController {
     private WiiObserver wiiObserver;
     private ControllerData controllerData;
     private boolean connected = true;
+    boolean hasNunchuk = false;
 
     public WiiMote(Mote mote, int id) {
         this.mote = mote;
@@ -36,7 +37,6 @@ public class WiiMote implements IController {
         components.add(new ControllerComponent(WiiIdentifier._1.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier._2.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.POV.getName(), 0.0f));
-        components.add(new ControllerComponent(WiiIdentifier.NONE.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.X_ACCELERATION.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.Y_ACCELERATION.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.Z_ACCELERATION.getName(), 0.0f));
@@ -44,16 +44,22 @@ public class WiiMote implements IController {
             Extension extension = mote.getExtension();
             if(extension != null) {
                 if(extension instanceof Nunchuk) {
-                    Nunchuk nunchuk = new Nunchuk();
-                    nunchuk.setMote(mote);
+                    hasNunchuk = true;
+                    components.add(new ControllerComponent(Component.Identifier.Button.C.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Button.Z.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Axis.X.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Axis.Y.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Axis.RX_ACCELERATION.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Axis.RY_ACCELERATION.getName(), 0.0f));
+                    components.add(new ControllerComponent(Component.Identifier.Axis.RZ_ACCELERATION.getName(), 0.0f));
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         controllerData = new ControllerData("WiiMote:" + id, ControllerType.WIIMOTE, components);
-        wiiObserver = new WiiObserver(this, mote);
+        wiiObserver = new WiiObserver(this, mote, hasNunchuk);
         wiiObserver.doStart();
     }
 

@@ -12,7 +12,7 @@ import motej.event.AccelerometerListener;
 import motej.event.CoreButtonEvent;
 import motej.event.CoreButtonListener;
 import motej.request.ReportModeRequest;
-import motejx.extensions.nunchuk.Nunchuk;
+import motejx.extensions.nunchuk.*;
 import net.java.games.input.Component;
 
 import javax.swing.text.html.Option;
@@ -33,12 +33,14 @@ public class WiiObserver implements IObserver {
     private String threadName = "WiiObserverThread:";
     private boolean running = false;
 
-    private final CoreButtonListener coreButtonListener = event -> {
-        populateButtonOutput(event);
-
+    private void applyCallbacks() {
         for(WiiIdentifier key : wiiListeners.keySet()) {
             wiiListeners.get(key).onChange(key.getName(), parent.getControllerData().getValue(key.getName()));
         }
+    }
+    private final CoreButtonListener coreButtonListener = event -> {
+        populateButtonOutput(event);
+        applyCallbacks();
     };
 
     private void populateButtonOutput(CoreButtonEvent e) {
@@ -64,28 +66,55 @@ public class WiiObserver implements IObserver {
         } else {
             parent.getControllerData().getOutputs().get(7).setValue(Component.POV.CENTER);
         }
-        parent.getControllerData().getOutputs().get(8).setValue(e.isNoButtonPressed() ? 1.0f : 0.0f);
     }
 
     private final AccelerometerListener accelerometerListener = event -> {
         populateAccelerometerOutput(event);
-
-        for(WiiIdentifier key : wiiListeners.keySet()) {
-            wiiListeners.get(key).onChange(key.getName(), parent.getControllerData().getValue(key.getName()));
-        }
+        applyCallbacks();
     };
 
     private void populateAccelerometerOutput(AccelerometerEvent e) {
-        parent.getControllerData().getOutputs().get(9).setValue((float) e.getX());
-        parent.getControllerData().getOutputs().get(10).setValue((float) e.getY());
-        parent.getControllerData().getOutputs().get(11).setValue((float) e.getZ());
+        parent.getControllerData().getOutputs().get(8).setValue((float) e.getX());
+        parent.getControllerData().getOutputs().get(9).setValue((float) e.getY());
+        parent.getControllerData().getOutputs().get(10).setValue((float) e.getZ());
     }
 
-    private void populateNunchukOutput()
+    private final NunchukButtonListener nunchukButtonListener = event -> {
+        populateNunchukButtonOutput(event);
+        applyCallbacks();
+    };
+
+    private void populateNunchukButtonOutput(NunchukButtonEvent e) {
+        parent.getControllerData().getOutputs().get(11).setValue(e.isButtonCPressed() ? 1.0f : 0.0f);
+        parent.getControllerData().getOutputs().get(12).setValue(e.isButtonZPressed() ? 1.0f : 0.0f);
+    }
+
+    private final AnalogStickListener analogStickListener = event -> {
+        populateNunchukJoystickOutput(event);
+        applyCallbacks();
+    };
+
+    private void populateNunchukJoystickOutput(AnalogStickEvent e) {
+        parent.getControllerData().getOutputs().get(13).setValue((float) e.getPoint().x);
+        parent.getControllerData().getOutputs().get(14).setValue((float) e.getPoint().y);
+    }
+
+    private final AccelerometerListener<Nunchuk> nunchukAccelerometerListener = event -> {
+        populateNunchukAccelerometerOutput(event);
+        applyCallbacks();
+    };
+
+    private void populateNunchukAccelerometerOutput(AccelerometerEvent<Nunchuk> e) {
+        parent.getControllerData().getOutputs().get(15).setValue((float) e.getX());
+        parent.getControllerData().getOutputs().get(16).setValue((float) e.getY());
+        parent.getControllerData().getOutputs().get(17).setValue((float) e.getZ());
+    }
 
     public WiiObserver(WiiMote parent, Mote mote, boolean hasNunchuk) {
         if(hasNunchuk) {
             this.nunchuk = mote.getExtension();
+            this.nunchuk.setMote(mote);
+            this.nunchuk.initialize();
         } else {
             this.nunchuk = null;
         }
@@ -126,10 +155,16 @@ public class WiiObserver implements IObserver {
             synchronized (this) {
                 mote.addCoreButtonListener(coreButtonListener);
                 mote.addAccelerometerListener(accelerometerListener);
+
+                if(nunchuk != null && nunchuk.getMote() == mote) {
+                    nunchuk.addNunchukButtonListener(nunchukButtonListener);
+                    nunchuk.addAnalogStickListener(analogStickListener);
+                    nunchuk.addAccelerometerListener(nunchukAccelerometerListener);
+                }
             }
 
             // Read Buttons and Accelerometer data from WiiMote
-            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x31, true);
+            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x35, true);
 
             running = true;
             worker = new Thread(this, this.threadName);
