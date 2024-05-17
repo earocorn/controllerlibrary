@@ -56,6 +56,7 @@ public class WiiMoteConnection implements IControllerConnection {
     }
 
     public void cancelSearch() {
+        isSearching = false;
         finder.stopDiscovery();
     }
 

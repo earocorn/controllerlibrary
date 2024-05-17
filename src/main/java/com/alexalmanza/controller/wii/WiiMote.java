@@ -7,7 +7,9 @@ import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.models.ControllerComponent;
 import com.alexalmanza.models.ControllerData;
 import com.alexalmanza.models.ControllerType;
+import motej.Extension;
 import motej.Mote;
+import motejx.extensions.nunchuk.Nunchuk;
 import net.java.games.input.Component;
 
 import java.util.ArrayList;
@@ -28,9 +30,6 @@ public class WiiMote implements IController {
         ArrayList<ControllerComponent> components = new ArrayList<>();
         components.add(new ControllerComponent(WiiIdentifier.A.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.B.getName(), 0.0f));
-//        components.add(new ControllerComponent(WiiIdentifier.MINUS.getName(), 0.0f));
-//        components.add(new ControllerComponent(WiiIdentifier.PLUS.getName(), 0.0f));
-//        components.add(new ControllerComponent(WiiIdentifier.HOME.getName(), 0.0f));
         components.add(new ControllerComponent(Component.Identifier.Button.LEFT_THUMB.getName(), 0.0f));
         components.add(new ControllerComponent(Component.Identifier.Button.RIGHT_THUMB.getName(), 0.0f));
         components.add(new ControllerComponent(Component.Identifier.Button.MODE.getName(), 0.0f));
@@ -41,6 +40,17 @@ public class WiiMote implements IController {
         components.add(new ControllerComponent(WiiIdentifier.X_ACCELERATION.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.Y_ACCELERATION.getName(), 0.0f));
         components.add(new ControllerComponent(WiiIdentifier.Z_ACCELERATION.getName(), 0.0f));
+        try{
+            Extension extension = mote.getExtension();
+            if(extension != null) {
+                if(extension instanceof Nunchuk) {
+                    Nunchuk nunchuk = new Nunchuk();
+                    nunchuk.setMote(mote);
+                }
+            }
+        } catch (Exception e) {
+
+        }
 
         controllerData = new ControllerData("WiiMote:" + id, ControllerType.WIIMOTE, components);
         wiiObserver = new WiiObserver(this, mote);

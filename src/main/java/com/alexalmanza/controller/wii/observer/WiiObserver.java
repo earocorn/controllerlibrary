@@ -5,17 +5,21 @@ import com.alexalmanza.controller.wii.identifiers.WiiIdentifier;
 import com.alexalmanza.interfaces.IObserver;
 import com.alexalmanza.interfaces.ControllerUpdateListener;
 import com.alexalmanza.models.ControllerComponent;
+import motej.Extension;
 import motej.Mote;
 import motej.event.AccelerometerEvent;
 import motej.event.AccelerometerListener;
 import motej.event.CoreButtonEvent;
 import motej.event.CoreButtonListener;
 import motej.request.ReportModeRequest;
+import motejx.extensions.nunchuk.Nunchuk;
 import net.java.games.input.Component;
 
+import javax.swing.text.html.Option;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -24,6 +28,7 @@ public class WiiObserver implements IObserver {
     private ConcurrentHashMap<WiiIdentifier, ControllerUpdateListener> wiiListeners;
     private WiiMote parent;
     private Mote mote;
+    private Nunchuk nunchuk;
     private Thread worker;
     private String threadName = "WiiObserverThread:";
     private boolean running = false;
@@ -44,15 +49,21 @@ public class WiiObserver implements IObserver {
         parent.getControllerData().getOutputs().get(4).setValue(e.isButtonHomePressed() ? 1.0f : 0.0f);
         parent.getControllerData().getOutputs().get(5).setValue(e.isButtonOnePressed() ? 1.0f : 0.0f);
         parent.getControllerData().getOutputs().get(6).setValue(e.isButtonTwoPressed() ? 1.0f : 0.0f);
-        float povDirection;
-        switch (e.getButton()) {
-            case CoreButtonEvent.D_PAD_DOWN -> povDirection = Component.POV.DOWN;
-            case CoreButtonEvent.D_PAD_LEFT -> povDirection = Component.POV.LEFT;
-            case CoreButtonEvent.D_PAD_RIGHT -> povDirection = Component.POV.RIGHT;
-            case CoreButtonEvent.D_PAD_UP -> povDirection = Component.POV.UP;
-            default -> povDirection = Component.POV.CENTER;
+
+        if(e.isDPadLeftPressed()) {
+            parent.getControllerData().getOutputs().get(7).setValue(Component.POV.LEFT);
+        } else
+        if(e.isDPadUpPressed()) {
+            parent.getControllerData().getOutputs().get(7).setValue(Component.POV.UP);
+        } else
+        if(e.isDPadRightPressed()) {
+            parent.getControllerData().getOutputs().get(7).setValue(Component.POV.RIGHT);
+        } else
+        if(e.isDPadDownPressed()) {
+            parent.getControllerData().getOutputs().get(7).setValue(Component.POV.DOWN);
+        } else {
+            parent.getControllerData().getOutputs().get(7).setValue(Component.POV.CENTER);
         }
-        parent.getControllerData().getOutputs().get(7).setValue(povDirection);
         parent.getControllerData().getOutputs().get(8).setValue(e.isNoButtonPressed() ? 1.0f : 0.0f);
     }
 
@@ -70,7 +81,14 @@ public class WiiObserver implements IObserver {
         parent.getControllerData().getOutputs().get(11).setValue((float) e.getZ());
     }
 
-    public WiiObserver(WiiMote parent, Mote mote) {
+    private void populateNunchukOutput()
+
+    public WiiObserver(WiiMote parent, Mote mote, boolean hasNunchuk) {
+        if(hasNunchuk) {
+            this.nunchuk = mote.getExtension();
+        } else {
+            this.nunchuk = null;
+        }
         this.parent = parent;
         this.mote = mote;
 
