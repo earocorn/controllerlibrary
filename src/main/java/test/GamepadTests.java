@@ -52,7 +52,7 @@ public class GamepadTests {
 
     @Test
     void wiiConnection() {
-        WiiMoteConnection wiiMoteConnection = new WiiMoteConnection();
+        WiiMoteConnection wiiMoteConnection = new WiiMoteConnection(5000);
     }
 
 }

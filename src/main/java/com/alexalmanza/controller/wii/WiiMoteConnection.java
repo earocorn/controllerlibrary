@@ -13,9 +13,10 @@ public class WiiMoteConnection implements IControllerConnection {
     private ArrayList<Mote> motes;
     private ArrayList<IController> connectedControllers;
     private MoteFinder finder;
-    private boolean isSearching = false;
+    private long searchTime;
 
-    public WiiMoteConnection() {
+    public WiiMoteConnection(long searchTime) {
+        this.searchTime = searchTime;
 
         motes = new ArrayList<>();
         MoteFinderListener listener = mote -> {
@@ -23,22 +24,18 @@ public class WiiMoteConnection implements IControllerConnection {
             System.out.println("WiiMote found!");
             motes.add(mote);
         };
-            finder = MoteFinder.getMoteFinder();
-            finder.addMoteFinderListener(listener);
+        finder = MoteFinder.getMoteFinder();
+        finder.addMoteFinderListener(listener);
+
+        System.out.println("Starting Wii discovery");
+        finder.startDiscovery();
 
         try {
-            System.out.println("Starting Wii discovery");
-            finder.startDiscovery();
-            isSearching = true;
-            while(isSearching) {
-                //if(!motes.isEmpty()) { isSearching = false; }
-                Thread.sleep(1000);
-                System.out.println("Searching...");
-            }
+            Thread.sleep(searchTime);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } finally {
-            isSearching = false;
+            System.out.println("Stopping Wii discovery. Found " + motes.size() + " wii motes.");
             finder.stopDiscovery();
         }
 
@@ -55,15 +52,18 @@ public class WiiMoteConnection implements IControllerConnection {
         }
     }
 
+    public long getSearchTime() {
+        return this.searchTime;
+    }
+
     public void cancelSearch() {
-        isSearching = false;
         finder.stopDiscovery();
+        System.out.println("Cancelling discovery");
     }
 
     @Override
     public void disconnect() {
-        isSearching = false;
-        finder.stopDiscovery();
+        cancelSearch();
         for (Mote mote : motes) {
             mote.disconnect();
         }

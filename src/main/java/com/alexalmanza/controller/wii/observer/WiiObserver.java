@@ -7,10 +7,7 @@ import com.alexalmanza.interfaces.ControllerUpdateListener;
 import com.alexalmanza.models.ControllerComponent;
 import motej.Extension;
 import motej.Mote;
-import motej.event.AccelerometerEvent;
-import motej.event.AccelerometerListener;
-import motej.event.CoreButtonEvent;
-import motej.event.CoreButtonListener;
+import motej.event.*;
 import motej.request.ReportModeRequest;
 import motejx.extensions.nunchuk.*;
 import net.java.games.input.Component;
@@ -23,15 +20,23 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-public class WiiObserver implements IObserver {
+public class WiiObserver implements IObserver, ExtensionListener {
 
     private ConcurrentHashMap<WiiIdentifier, ControllerUpdateListener> wiiListeners;
     private WiiMote parent;
     private Mote mote;
-    private Nunchuk nunchuk;
     private Thread worker;
     private String threadName = "WiiObserverThread:";
     private boolean running = false;
+    NunchukCalibrationData nunchukCalibrationData = null;
+    private ControllerComponent[] nunchukComponents = new ControllerComponent[]{
+            new ControllerComponent(Component.Identifier.Button.C.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Button.Z.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Axis.X.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Axis.Y.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Axis.RX_ACCELERATION.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Axis.RY_ACCELERATION.getName(), 0.0f),
+            new ControllerComponent(Component.Identifier.Axis.RZ_ACCELERATION.getName(), 0.0f)};
 
     private void applyCallbacks() {
         for(WiiIdentifier key : wiiListeners.keySet()) {
@@ -68,15 +73,15 @@ public class WiiObserver implements IObserver {
         }
     }
 
-    private final AccelerometerListener accelerometerListener = event -> {
+    private final AccelerometerListener<Mote> accelerometerListener = event -> {
         populateAccelerometerOutput(event);
         applyCallbacks();
     };
 
-    private void populateAccelerometerOutput(AccelerometerEvent e) {
-        parent.getControllerData().getOutputs().get(8).setValue((float) e.getX());
-        parent.getControllerData().getOutputs().get(9).setValue((float) e.getY());
-        parent.getControllerData().getOutputs().get(10).setValue((float) e.getZ());
+    private void populateAccelerometerOutput(AccelerometerEvent<Mote> e) {
+        parent.getControllerData().getOutputs().get(8).setValue(e.getX() & 0xff);
+        parent.getControllerData().getOutputs().get(9).setValue(e.getY() & 0xff);
+        parent.getControllerData().getOutputs().get(10).setValue(e.getZ() & 0xff);
     }
 
     private final NunchukButtonListener nunchukButtonListener = event -> {
@@ -95,7 +100,14 @@ public class WiiObserver implements IObserver {
     };
 
     private void populateNunchukJoystickOutput(AnalogStickEvent e) {
-        parent.getControllerData().getOutputs().get(13).setValue((float) e.getPoint().x);
+        // Calculate calibration to match the [-1.0, 1.0] interval of normal controller axes
+        // Calibration data example. MaxAnalog = 254, MinAnalog = 254, CenterPoint = 112, 114,
+        // Actual x, y axes data: CenterPoint = [124, 123]
+        // UP: [121, 217]
+        // DOWN: [122, 28]
+        // LEFT: [23, 120]
+        // RIGHT: [220, 120]
+        parent.getControllerData().getOutputs().get(13).setValue((float) ((nunchukCalibrationData.getMaximumAnalogPoint().getX() - e.getPoint().getX())/nunchukCalibrationData.getCenterAnalogPoint().getX());
         parent.getControllerData().getOutputs().get(14).setValue((float) e.getPoint().y);
     }
 
@@ -105,19 +117,12 @@ public class WiiObserver implements IObserver {
     };
 
     private void populateNunchukAccelerometerOutput(AccelerometerEvent<Nunchuk> e) {
-        parent.getControllerData().getOutputs().get(15).setValue((float) e.getX());
-        parent.getControllerData().getOutputs().get(16).setValue((float) e.getY());
-        parent.getControllerData().getOutputs().get(17).setValue((float) e.getZ());
+        parent.getControllerData().getOutputs().get(15).setValue(e.getX() & 0xff);
+        parent.getControllerData().getOutputs().get(16).setValue(e.getY() & 0xff);
+        parent.getControllerData().getOutputs().get(17).setValue(e.getZ() & 0xff);
     }
 
-    public WiiObserver(WiiMote parent, Mote mote, boolean hasNunchuk) {
-        if(hasNunchuk) {
-            this.nunchuk = mote.getExtension();
-            this.nunchuk.setMote(mote);
-            this.nunchuk.initialize();
-        } else {
-            this.nunchuk = null;
-        }
+    public WiiObserver(WiiMote parent, Mote mote) {
         this.parent = parent;
         this.mote = mote;
 
@@ -153,18 +158,13 @@ public class WiiObserver implements IObserver {
             }
 
             synchronized (this) {
+                mote.addExtensionListener(this);
                 mote.addCoreButtonListener(coreButtonListener);
                 mote.addAccelerometerListener(accelerometerListener);
-
-                if(nunchuk != null && nunchuk.getMote() == mote) {
-                    nunchuk.addNunchukButtonListener(nunchukButtonListener);
-                    nunchuk.addAnalogStickListener(analogStickListener);
-                    nunchuk.addAccelerometerListener(nunchukAccelerometerListener);
-                }
             }
 
             // Read Buttons and Accelerometer data from WiiMote
-            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x35, true);
+            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x32, true);
 
             running = true;
             worker = new Thread(this, this.threadName);
@@ -176,6 +176,8 @@ public class WiiObserver implements IObserver {
     @Override
     public void doStop() {
         running = false;
+        mote.setReportMode(ReportModeRequest.DATA_REPORT_0x30);
+        mote.disconnect();
         System.out.println("Observer stopped");
     }
 
@@ -194,4 +196,49 @@ public class WiiObserver implements IObserver {
         }
     }
 
+    @Override
+    public void extensionConnected(ExtensionEvent extensionEvent) {
+        if(extensionEvent.getExtension() instanceof Nunchuk nunchuk) {
+            for(ControllerComponent nunchukComponent : nunchukComponents) {
+                parent.getControllerData().getOutputs().add(nunchukComponent);
+            }
+            mote.setReportMode(ReportModeRequest.DATA_REPORT_0x35, true);
+            nunchuk.addNunchukButtonListener(nunchukButtonListener);
+            nunchuk.addAnalogStickListener(analogStickListener);
+            nunchuk.addAccelerometerListener(nunchukAccelerometerListener);
+
+            Thread calibrationThread = new Thread(() -> {
+                while(nunchuk.getCalibrationData() == null) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if(nunchuk.getCalibrationData() !=null) {
+                    System.out.println("Nunchuk calibration data: \n"
+                            + nunchuk.getCalibrationData().getMaximumAnalogPoint() + ", "
+                            + nunchuk.getCalibrationData().getMinimumAnalogPoint() + ", "
+                            + nunchuk.getCalibrationData().getCenterAnalogPoint() + ", "
+                            + nunchuk.getCalibrationData().getZeroForceX() + ", "
+                            + nunchuk.getCalibrationData().getZeroForceY() + ", "
+                            + nunchuk.getCalibrationData().getZeroForceZ() + ", "
+                            + nunchuk.getCalibrationData().getGravityForceX() + ", "
+                            + nunchuk.getCalibrationData().getGravityForceY() + ", "
+                            + nunchuk.getCalibrationData().getGravityForceZ() + ", ");
+                } else {
+                    System.out.println("Null calibration data");
+                }
+            }, "calibrationThread");
+            calibrationThread.start();
+        }
+    }
+
+    @Override
+    public void extensionDisconnected(ExtensionEvent extensionEvent) {
+        mote.setReportMode(ReportModeRequest.DATA_REPORT_0x30, true);
+        for(ControllerComponent nunchukComponent : nunchukComponents) {
+            parent.getControllerData().getOutputs().remove(nunchukComponent);
+        }
+    }
 }

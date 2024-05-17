@@ -15,6 +15,9 @@ public class FindControllers {
     private GamepadConnection gamepadConnection;
     private WiiMoteConnection wiiMoteConnection;
     private ArrayList<IController> controllers;
+    private Event event;
+    private ControllerType[] types;
+    private long searchTime = 5000;
     public FindControllers(Event event) {
         controllers = new ArrayList<>();
 
@@ -28,7 +31,7 @@ public class FindControllers {
         }
 
         try {
-            wiiMoteConnection = new WiiMoteConnection();
+            wiiMoteConnection = new WiiMoteConnection(searchTime);
             if(wiiMoteConnection.getConnectedControllers() != null && !wiiMoteConnection.getConnectedControllers().isEmpty()) {
                 controllers.addAll(wiiMoteConnection.getConnectedControllers());
             }
@@ -37,14 +40,16 @@ public class FindControllers {
         }
     }
 
-    public FindControllers(Event event, ControllerType... types) {
+    public FindControllers(long searchTime, Event event, ControllerType... types) {
         controllers = new ArrayList<>();
-
-        for(ControllerType type : types) {
+        this.searchTime = searchTime;
+        this.event = event;
+        this.types = types;
+        for(ControllerType type : this.types) {
             switch(type) {
                 case GAMEPAD -> {
                     try {
-                        gamepadConnection = new GamepadConnection(event);
+                        gamepadConnection = new GamepadConnection(this.event);
                         if (gamepadConnection.getConnectedControllers() != null && !gamepadConnection.getConnectedControllers().isEmpty()) {
                             controllers.addAll(gamepadConnection.getConnectedControllers());
                         }
@@ -54,7 +59,7 @@ public class FindControllers {
                 }
                 case WIIMOTE -> {
                     try {
-                        wiiMoteConnection = new WiiMoteConnection();
+                        wiiMoteConnection = new WiiMoteConnection(searchTime);
                         if(wiiMoteConnection.getConnectedControllers() != null && !wiiMoteConnection.getConnectedControllers().isEmpty()) {
                             controllers.addAll(wiiMoteConnection.getConnectedControllers());
                         }
@@ -62,9 +67,7 @@ public class FindControllers {
                         e.printStackTrace();
                     }
                 }
-                default -> {
-                    throw new IllegalStateException("No controller connections requested.");
-                }
+                default -> throw new IllegalStateException("No controller connections requested.");
             }
         }
     }
