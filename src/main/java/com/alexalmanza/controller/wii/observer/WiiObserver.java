@@ -29,6 +29,12 @@ public class WiiObserver implements IObserver, ExtensionListener {
     private String threadName = "WiiObserverThread:";
     private boolean running = false;
     NunchukCalibrationData nunchukCalibrationData = null;
+    private boolean calibrated = false;
+    private double rawXValue;
+    private double rawYValue;
+    private double xOffset;
+    private double yOffset;
+    private double calibrationConstant;
     private ControllerComponent[] nunchukComponents = new ControllerComponent[]{
             new ControllerComponent(Component.Identifier.Button.C.getName(), 0.0f),
             new ControllerComponent(Component.Identifier.Button.Z.getName(), 0.0f),
@@ -95,21 +101,56 @@ public class WiiObserver implements IObserver, ExtensionListener {
     }
 
     private final AnalogStickListener analogStickListener = event -> {
+        if(!calibrated) {
+            rawXValue = event.getPoint().getX();
+            rawYValue = event.getPoint().getY();
+        }
         populateNunchukJoystickOutput(event);
         applyCallbacks();
     };
 
     private void populateNunchukJoystickOutput(AnalogStickEvent e) {
-        // TODO: here
-        // Calculate calibration to match the [-1.0, 1.0] interval of normal controller axes
-        // Calibration data example. MaxAnalog = 254, MinAnalog = 254, CenterPoint = 112, 114,
-        // Actual x, y axes data: CenterPoint = [124, 123]
-        // UP: [121, 217]
-        // DOWN: [122, 28]
-        // LEFT: [23, 120]
-        // RIGHT: [220, 120]
-        parent.getControllerData().getOutputs().get(13).setValue((float) ((nunchukCalibrationData.getMaximumAnalogPoint().getX() - e.getPoint().getX())/nunchukCalibrationData.getCenterAnalogPoint().getX());
-        parent.getControllerData().getOutputs().get(14).setValue((float) e.getPoint().y);
+        // Equation to get calibrated value as a number on -1.0 -> 1.0 axis
+        if(nunchukCalibrationData != null) {
+            double calibratedX = calibrationConstant * ((e.getPoint().getX()
+                    - (nunchukCalibrationData.getCenterAnalogPoint().getX()
+                    - xOffset)))
+                    / nunchukCalibrationData.getMaximumAnalogPoint().getX();
+            double calibratedY = calibrationConstant * ((e.getPoint().getY()
+                    - (nunchukCalibrationData.getCenterAnalogPoint().getY()
+                    - yOffset)))
+                    / nunchukCalibrationData.getMaximumAnalogPoint().getY();
+
+            if(calibratedY != 0) {
+                calibratedY = -calibratedY;
+            }
+
+            float cX = (float) calibratedX;
+            float cY = (float) calibratedY;
+
+            // Cap max and min values to 1.0 and -1.0
+            if(cX > 1.0f) {
+                cX = Math.min(1.0f, cX);
+            } else if(cX < -1.0f) {
+                cX = Math.max(-1.0f, cX);
+            }
+            if(cY > 1.0f) {
+                cY = Math.min(1.0f, cY);
+            } else if(cY < -1.0f) {
+                cY = Math.max(-1.0f, cY);
+            }
+
+            // Round numbers that are close to 0 to 0
+            if(cX >= -0.05 && cX <= 0.05) {
+                cX = 0.0f;
+            }
+            if(cY >= -0.05 && cY <= 0.05) {
+                cY = 0.0f;
+            }
+
+            parent.getControllerData().getOutputs().get(13).setValue(cX);
+            parent.getControllerData().getOutputs().get(14).setValue(cY);
+        }
     }
 
     private final AccelerometerListener<Nunchuk> nunchukAccelerometerListener = event -> {
@@ -211,22 +252,21 @@ public class WiiObserver implements IObserver, ExtensionListener {
             Thread calibrationThread = new Thread(() -> {
                 while(nunchuk.getCalibrationData() == null) {
                     try {
-                        Thread.sleep(1);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
                 if(nunchuk.getCalibrationData() !=null) {
-                    System.out.println("Nunchuk calibration data: \n"
-                            + nunchuk.getCalibrationData().getMaximumAnalogPoint() + ", "
-                            + nunchuk.getCalibrationData().getMinimumAnalogPoint() + ", "
-                            + nunchuk.getCalibrationData().getCenterAnalogPoint() + ", "
-                            + nunchuk.getCalibrationData().getZeroForceX() + ", "
-                            + nunchuk.getCalibrationData().getZeroForceY() + ", "
-                            + nunchuk.getCalibrationData().getZeroForceZ() + ", "
-                            + nunchuk.getCalibrationData().getGravityForceX() + ", "
-                            + nunchuk.getCalibrationData().getGravityForceY() + ", "
-                            + nunchuk.getCalibrationData().getGravityForceZ() + ", ");
+                    this.nunchukCalibrationData = nunchuk.getCalibrationData();
+                    if(!calibrated) {
+                        if(nunchuk.getCalibrationData().getCenterAnalogPoint() != null && nunchuk.getCalibrationData().getMaximumAnalogPoint() != null) {
+                            xOffset = nunchuk.getCalibrationData().getCenterAnalogPoint().getX() - rawXValue;
+                            yOffset = nunchuk.getCalibrationData().getCenterAnalogPoint().getY() - rawYValue;
+                            calibrationConstant = nunchuk.getCalibrationData().getMaximumAnalogPoint().getX() / 100.00f;
+                            calibrated = true;
+                        }
+                    }
                 } else {
                     System.out.println("Null calibration data");
                 }

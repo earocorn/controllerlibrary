@@ -25,7 +25,11 @@ public class WiiMote implements IController {
     public WiiMote(Mote mote, int id) {
         this.mote = mote;
 
-        mote.addMoteDisconnectedListener(moteDisconnectedEvent -> connected = false);
+        mote.addMoteDisconnectedListener(moteDisconnectedEvent -> {
+                    connected = false;
+                    mote.disconnect();
+                    wiiObserver.doStop();
+        });
 
         mote.setPlayerLeds(new boolean[]{id == 0, id == 1, id == 2, id == 3});
 
