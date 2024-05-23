@@ -19,11 +19,47 @@ public class WiiMoteConnection implements IControllerConnection {
         this.searchTime = searchTime;
 
         motes = new ArrayList<>();
+
+        // Find 4 WiiMotes
         MoteFinderListener listener = mote -> {
             mote.rumble(2000L);
             System.out.println("WiiMote found!");
             motes.add(mote);
+            finder = MoteFinder.getMoteFinder();
+            finder.addMoteFinderListener(mote1 -> {
+                motes.add(mote1);
+                finder = MoteFinder.getMoteFinder();
+                finder.addMoteFinderListener(mote2 -> {
+                    motes.add(mote2);
+                    finder = MoteFinder.getMoteFinder();
+                    finder.addMoteFinderListener(mote3 -> {
+                        motes.add(mote3);
+                    });
+                    finder.startDiscovery();
+                    try {
+                        Thread.sleep(searchTime);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    finder.stopDiscovery();
+                });
+                finder.startDiscovery();
+                try {
+                    Thread.sleep(searchTime);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                finder.stopDiscovery();
+            });
+            finder.startDiscovery();
+            try {
+                Thread.sleep(searchTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            finder.stopDiscovery();
         };
+
         finder = MoteFinder.getMoteFinder();
         finder.addMoteFinderListener(listener);
 
